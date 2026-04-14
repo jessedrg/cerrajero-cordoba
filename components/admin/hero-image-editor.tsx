@@ -161,57 +161,83 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     // USE PAGE CONTEXT - serviceName and cityName from props
     const randomTagline = TAGLINES[Math.floor(Math.random() * TAGLINES.length)]
     
-    // Random positions (margin from left edge - small values to avoid cutting)
-    const baseX = 3 + Math.random() * 5  // 3-8% margin from left
+    // Random positions (margin from left edge - integers only!)
+    const baseX = Math.floor(3 + Math.random() * 5)  // 3-7% margin from left
+    const titleY = Math.floor(22 + Math.random() * 8)  // 22-29%
+    const subtitleY = Math.floor(38 + Math.random() * 8)  // 38-45%
+    const taglineY = Math.floor(50 + Math.random() * 6)  // 50-55%
+    const badgeY = Math.floor(64 + Math.random() * 8)  // 64-71% - SAME for both badges!
     
-    // Random colors
-    const colors = ["#1e293b", "#0f172a", "#334155", "#1e40af", "#7c2d12"]
-    const accentColors = ["#f59e0b", "#ef4444", "#22c55e", "#3b82f6", "#8b5cf6"]
+    // SUPER random colors - many more options!
+    const titleColors = [
+      "#1e293b", "#0f172a", "#334155", "#1e40af", "#7c2d12", 
+      "#0c4a6e", "#14532d", "#4c1d95", "#831843", "#1f2937",
+      "#18181b", "#292524", "#1c1917", "#0a0a0a", "#171717"
+    ]
+    const accentColors = [
+      "#f59e0b", "#ef4444", "#22c55e", "#3b82f6", "#8b5cf6",
+      "#ec4899", "#14b8a6", "#f97316", "#06b6d4", "#eab308",
+      "#84cc16", "#10b981", "#6366f1", "#d946ef", "#f43f5e"
+    ]
+    const subtitleColors = [
+      "#475569", "#64748b", "#6b7280", "#71717a", "#737373",
+      "#525252", "#57534e", "#78716c", "#a8a29e", "#9ca3af"
+    ]
     
-    const randomColor = colors[Math.floor(Math.random() * colors.length)]
+    const randomTitleColor = titleColors[Math.floor(Math.random() * titleColors.length)]
     const randomAccent = accentColors[Math.floor(Math.random() * accentColors.length)]
+    const randomSubtitleColor = subtitleColors[Math.floor(Math.random() * subtitleColors.length)]
+    
+    // Random font sizes (integers)
+    const titleSize = Math.floor(38 + Math.random() * 16)  // 38-53px
+    const subtitleSize = Math.floor(18 + Math.random() * 10)  // 18-27px
+    const taglineSize = Math.floor(14 + Math.random() * 8)  // 14-21px
     
     // Title uses page context: serviceName + cityName
     setTitleConfig(prev => ({
       ...prev,
       text: `${serviceName} en ${cityName}`,
       x: baseX,
-      y: 25 + Math.random() * 10,
-      color: randomColor
+      y: titleY,
+      size: titleSize,
+      color: randomTitleColor
     }))
     
     setSubtitleConfig(prev => ({
       ...prev,
       text: "Servicio profesional 24 horas",
       x: baseX,
-      y: 40 + Math.random() * 10,
-      color: "#475569"
+      y: subtitleY,
+      size: subtitleSize,
+      color: randomSubtitleColor
     }))
     
     setTaglineConfig(prev => ({
       ...prev,
       text: randomTagline,
       x: baseX,
-      y: 52 + Math.random() * 8,
+      y: taglineY,
+      size: taglineSize,
       color: randomAccent
     }))
     
+    // Both badges on SAME Y position to avoid overlap
     setPhoneBadge(prev => ({
       ...prev,
       x: baseX,
-      y: 68 + Math.random() * 8,
+      y: badgeY,
       bgColor: randomAccent
     }))
     
     setWhatsappBadge(prev => ({
       ...prev,
-      x: baseX + 18,
-      y: 68 + Math.random() * 8
+      x: baseX + 20,
+      y: badgeY  // SAME Y as phone badge!
     }))
     
     setStripeColor(randomAccent)
     
-    setTimeout(() => setGenerating(false), 500)
+    setTimeout(() => setGenerating(false), 300)
   }, [serviceName, cityName])
 
   // Export as image using html2canvas
@@ -584,22 +610,22 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                       
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label>Posición X: {titleConfig.x}%</Label>
+                          <Label>Posición X: {Math.round(titleConfig.x)}%</Label>
                           <Slider
-                            value={[titleConfig.x]}
+                            value={[Math.round(titleConfig.x)]}
                             onValueChange={([v]) => setTitleConfig(prev => ({ ...prev, x: v }))}
-                            min={10}
-                            max={90}
+                            min={0}
+                            max={50}
                             step={1}
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label>Posición Y: {titleConfig.y}%</Label>
+                          <Label>Posición Y: {Math.round(titleConfig.y)}%</Label>
                           <Slider
-                            value={[titleConfig.y]}
+                            value={[Math.round(titleConfig.y)]}
                             onValueChange={([v]) => setTitleConfig(prev => ({ ...prev, y: v }))}
-                            min={10}
-                            max={90}
+                            min={5}
+                            max={85}
                             step={1}
                           />
                         </div>
@@ -651,22 +677,22 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                       
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label>Posición X: {subtitleConfig.x}%</Label>
+                          <Label>Posición X: {Math.round(subtitleConfig.x)}%</Label>
                           <Slider
-                            value={[subtitleConfig.x]}
+                            value={[Math.round(subtitleConfig.x)]}
                             onValueChange={([v]) => setSubtitleConfig(prev => ({ ...prev, x: v }))}
-                            min={10}
-                            max={90}
+                            min={0}
+                            max={50}
                             step={1}
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label>Posición Y: {subtitleConfig.y}%</Label>
+                          <Label>Posición Y: {Math.round(subtitleConfig.y)}%</Label>
                           <Slider
-                            value={[subtitleConfig.y]}
+                            value={[Math.round(subtitleConfig.y)]}
                             onValueChange={([v]) => setSubtitleConfig(prev => ({ ...prev, y: v }))}
-                            min={10}
-                            max={90}
+                            min={5}
+                            max={85}
                             step={1}
                           />
                         </div>
@@ -737,6 +763,28 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                         />
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
+                            <Label>X: {Math.round(phoneBadge.x)}%</Label>
+                            <Slider
+                              value={[Math.round(phoneBadge.x)]}
+                              onValueChange={([v]) => setPhoneBadge(prev => ({ ...prev, x: v }))}
+                              min={0}
+                              max={50}
+                              step={1}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Y: {Math.round(phoneBadge.y)}%</Label>
+                            <Slider
+                              value={[Math.round(phoneBadge.y)]}
+                              onValueChange={([v]) => setPhoneBadge(prev => ({ ...prev, y: v }))}
+                              min={50}
+                              max={90}
+                              step={1}
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
                             <Label>Color fondo</Label>
                             <Input
                               type="color"
@@ -770,26 +818,50 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                     </div>
                     
                     {whatsappBadge.visible && (
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label>Color fondo</Label>
-                          <Input
-                            type="color"
-                            value={whatsappBadge.bgColor}
-                            onChange={(e) => setWhatsappBadge(prev => ({ ...prev, bgColor: e.target.value }))}
-                            className="h-10 p-1"
-                          />
+                      <>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>X: {Math.round(whatsappBadge.x)}%</Label>
+                            <Slider
+                              value={[Math.round(whatsappBadge.x)]}
+                              onValueChange={([v]) => setWhatsappBadge(prev => ({ ...prev, x: v }))}
+                              min={10}
+                              max={60}
+                              step={1}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Y: {Math.round(whatsappBadge.y)}%</Label>
+                            <Slider
+                              value={[Math.round(whatsappBadge.y)]}
+                              onValueChange={([v]) => setWhatsappBadge(prev => ({ ...prev, y: v }))}
+                              min={50}
+                              max={90}
+                              step={1}
+                            />
+                          </div>
                         </div>
-                        <div className="space-y-2">
-                          <Label>Color texto</Label>
-                          <Input
-                            type="color"
-                            value={whatsappBadge.textColor}
-                            onChange={(e) => setWhatsappBadge(prev => ({ ...prev, textColor: e.target.value }))}
-                            className="h-10 p-1"
-                          />
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Color fondo</Label>
+                            <Input
+                              type="color"
+                              value={whatsappBadge.bgColor}
+                              onChange={(e) => setWhatsappBadge(prev => ({ ...prev, bgColor: e.target.value }))}
+                              className="h-10 p-1"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Color texto</Label>
+                            <Input
+                              type="color"
+                              value={whatsappBadge.textColor}
+                              onChange={(e) => setWhatsappBadge(prev => ({ ...prev, textColor: e.target.value }))}
+                              className="h-10 p-1"
+                            />
+                          </div>
                         </div>
-                      </div>
+                      </>
                     )}
                   </div>
                 </TabsContent>
