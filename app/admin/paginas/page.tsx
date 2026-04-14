@@ -34,7 +34,8 @@ import {
   Trash2,
   ImageOff,
   Users,
-  RefreshCw
+  RefreshCw,
+  Type
 } from "lucide-react"
 import {
   AlertDialog,
@@ -469,6 +470,133 @@ export default function PaginasPage() {
     }, 2000)
   }
 
+  // Generate SEO-optimized title for Google
+  const generateSEOTitle = (serviceName: string, cityName: string): string => {
+    // Emojis to use randomly
+    const emojis = ["🔧", "⚡", "🔑", "🚨", "📞", "✅", "💪", "🏠", "⏰", "🛠️", ""]
+    
+    // Title templates focused on urgency, service, zone, price
+    const templates = [
+      // Urgency focused
+      `{emoji} {servicio} URGENTE en {ciudad} | 24 Horas`,
+      `{servicio} Urgente en {ciudad} {emoji} Llegamos en 15 min`,
+      `{emoji} {servicio} 24h en {ciudad} - Servicio Rápido`,
+      `Urgencias {servicio} {ciudad} {emoji} Disponible Ahora`,
+      `{servicio} de Urgencia en {ciudad} {emoji} 24/7`,
+      
+      // Price focused
+      `{servicio} en {ciudad} {emoji} Precios Económicos`,
+      `{emoji} {servicio} Barato en {ciudad} | Presupuesto Gratis`,
+      `{servicio} {ciudad} Económico {emoji} Sin Compromiso`,
+      `{emoji} {servicio} en {ciudad} - Mejor Precio Garantizado`,
+      `{servicio} Profesional {ciudad} {emoji} Precios Justos`,
+      
+      // Local/Zone focused
+      `{servicio} en {ciudad} y Alrededores {emoji}`,
+      `{emoji} Tu {servicio} de Confianza en {ciudad}`,
+      `{servicio} Local en {ciudad} {emoji} Rápido y Fiable`,
+      `{emoji} {servicio} Cerca de Ti en {ciudad}`,
+      `Mejor {servicio} en {ciudad} {emoji} Opiniones 5★`,
+      
+      // Combined urgency + price
+      `{emoji} {servicio} Urgente y Barato en {ciudad}`,
+      `{servicio} 24h {ciudad} {emoji} Económico y Rápido`,
+      `{emoji} {servicio} en {ciudad} | Urgencias al Mejor Precio`,
+      `{servicio} Rápido en {ciudad} {emoji} Precios Sin Sorpresas`,
+      
+      // Question format
+      `¿Necesitas {servicio} en {ciudad}? {emoji} Llámanos`,
+      `¿Buscas {servicio} Urgente en {ciudad}? {emoji}`,
+      `{servicio} en {ciudad} {emoji} ¿Urgencia? Te Ayudamos`,
+      
+      // Action focused
+      `Llama Ahora: {servicio} en {ciudad} {emoji}`,
+      `{emoji} {servicio} {ciudad} - Resolvemos Hoy`,
+      `{servicio} Inmediato en {ciudad} {emoji} Llámanos`,
+    ]
+    
+    // Select random template and emoji
+    const template = templates[Math.floor(Math.random() * templates.length)]
+    const emoji = emojis[Math.floor(Math.random() * emojis.length)]
+    
+    // Replace placeholders
+    let title = template
+      .replace(/{servicio}/g, serviceName)
+      .replace(/{ciudad}/g, cityName)
+      .replace(/{emoji}/g, emoji)
+      .replace(/\s+/g, ' ')
+      .trim()
+    
+    // Clean up double spaces and trim
+    title = title.replace(/\s{2,}/g, ' ').trim()
+    
+    // If title starts or ends with space after emoji removal, clean it
+    if (title.startsWith(' ')) title = title.substring(1)
+    if (title.endsWith(' ')) title = title.slice(0, -1)
+    
+    // Ensure title is not too long (max ~60 chars for Google)
+    if (title.length > 60) {
+      title = title.substring(0, 57) + "..."
+    }
+    
+    return title
+  }
+
+  // Bulk regenerate all SEO titles
+  const bulkRegenerateTitles = async () => {
+    if (pages.length === 0) {
+      alert("No hay páginas para regenerar")
+      return
+    }
+    
+    if (!confirm(`Se van a REGENERAR los títulos SEO de TODAS las ${pages.length} páginas. ¿Continuar?`)) {
+      return
+    }
+    
+    setBulkPublishing(true)
+    setBulkProgress({ current: 0, total: pages.length, status: "Regenerando títulos..." })
+    
+    let successCount = 0
+    
+    for (let i = 0; i < pages.length; i++) {
+      const page = pages[i]
+      const cityName = page.cities?.name || "Ciudad"
+      const serviceName = page.services?.name || "Cerrajero"
+      
+      const newTitle = generateSEOTitle(serviceName, cityName)
+      
+      setBulkProgress({ 
+        current: i + 1, 
+        total: pages.length, 
+        status: `Título: ${newTitle.substring(0, 30)}...` 
+      })
+      
+      try {
+        const updateRes = await fetch(`/api/admin/pages/${page.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: newTitle })
+        })
+        
+        if (updateRes.ok) {
+          successCount++
+        }
+      } catch (error) {
+        console.error(`Error updating title for ${page.slug}:`, error)
+      }
+      
+      // Small delay to avoid rate limiting
+      await new Promise(r => setTimeout(r, 100))
+    }
+    
+    setBulkProgress({ current: pages.length, total: pages.length, status: `Completado! ${successCount} títulos regenerados` })
+    
+    setTimeout(() => {
+      setBulkPublishing(false)
+      fetchPages()
+    }, 2000)
+  }
+
   const filteredPages = pages.filter(page => {
     const matchesSearch = 
       page.slug.toLowerCase().includes(search.toLowerCase()) ||
@@ -520,7 +648,25 @@ export default function PaginasPage() {
             {pages.length} páginas en total - {pages.filter(p => p.status === "published").length} publicadas
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Button 
+            variant="outline"
+            onClick={bulkRegenerateTitles}
+            disabled={bulkPublishing}
+            className="border-purple-200 text-purple-600 hover:bg-purple-50"
+          >
+            {bulkPublishing ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                {bulkProgress.current}/{bulkProgress.total}
+              </>
+            ) : (
+              <>
+                <Type className="h-4 w-4 mr-2" />
+                Generar Títulos SEO
+              </>
+            )}
+          </Button>
           <Button 
             variant="outline"
             onClick={regenerateAllImages}
@@ -535,7 +681,7 @@ export default function PaginasPage() {
             ) : (
               <>
                 <RefreshCw className="h-4 w-4 mr-2" />
-                Regenerar Todas
+                Regenerar Imágenes
               </>
             )}
           </Button>
@@ -553,7 +699,7 @@ export default function PaginasPage() {
             ) : (
               <>
                 <ImageOff className="h-4 w-4 mr-2" />
-                Generar Restantes ({pages.filter(p => !p.hero_image_url).length})
+                Publicar Restantes ({pages.filter(p => !p.hero_image_url).length})
               </>
             )}
           </Button>
