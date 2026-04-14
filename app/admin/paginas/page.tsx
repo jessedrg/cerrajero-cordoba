@@ -117,14 +117,62 @@ export default function PaginasPage() {
     "/images/bases/trabajador-4.jpeg",
   ]
   
-  // Random taglines
-  const TAGLINES = [
-    "Servicio 24 horas",
-    "Llegamos en 15-30 minutos",
-    "Presupuesto sin compromiso",
-    "Profesionales certificados",
-    "Urgencias atendidas al momento",
-  ]
+  // Taglines por tipo de servicio
+  const getTaglinesForService = (serviceName: string): string[] => {
+    const serviceKey = serviceName.toLowerCase()
+    
+    if (serviceKey.includes("cerrajer")) {
+      return [
+        "Servicio 24 horas",
+        "Llegamos en 15-30 minutos",
+        "Abrimos sin romper tu cerradura",
+        "Urgencias atendidas al momento",
+        "Cambio de cerraduras urgente",
+        "Presupuesto sin compromiso",
+      ]
+    }
+    
+    if (serviceKey.includes("electric")) {
+      return [
+        "Servicio 24 horas",
+        "Llegamos en 15-30 minutos",
+        "Reparaciones electricas urgentes",
+        "Instalaciones y averias",
+        "Boletines electricos",
+        "Presupuesto sin compromiso",
+      ]
+    }
+    
+    if (serviceKey.includes("fontaner") || serviceKey.includes("plumber")) {
+      return [
+        "Servicio 24 horas",
+        "Llegamos en 15-30 minutos",
+        "Desatascos urgentes",
+        "Reparacion de fugas",
+        "Instalaciones sanitarias",
+        "Presupuesto sin compromiso",
+      ]
+    }
+    
+    if (serviceKey.includes("climatiza") || serviceKey.includes("aire")) {
+      return [
+        "Servicio 24 horas",
+        "Instalacion y reparacion",
+        "Mantenimiento de equipos",
+        "Cargas de gas",
+        "Presupuesto sin compromiso",
+      ]
+    }
+    
+    // Default generico
+    return [
+      "Servicio 24 horas",
+      "Llegamos en 15-30 minutos",
+      "Presupuesto sin compromiso",
+      "Profesionales certificados",
+      "Urgencias atendidas al momento",
+    ]
+  }
   
   // Color palettes
   const TITLE_COLORS = ["#1e293b", "#0f172a", "#1e40af", "#0c4a6e", "#14532d", "#4c1d95", "#831843"]
@@ -149,7 +197,9 @@ export default function PaginasPage() {
     const titleColor = TITLE_COLORS[Math.floor(Math.random() * TITLE_COLORS.length)]
     const accentColor = ACCENT_COLORS[Math.floor(Math.random() * ACCENT_COLORS.length)]
     const subtitleColor = SUBTITLE_COLORS[Math.floor(Math.random() * SUBTITLE_COLORS.length)]
-    const tagline = TAGLINES[Math.floor(Math.random() * TAGLINES.length)]
+    // Use taglines specific to the service type
+    const serviceTaglines = getTaglinesForService(serviceName)
+    const tagline = serviceTaglines[Math.floor(Math.random() * serviceTaglines.length)]
     const showPhoneBadge = Math.random() > 0.2 // 80% chance
     const showWhatsappBadge = Math.random() > 0.3 // 70% chance
     const showStripe = Math.random() > 0.3 // 70% chance
