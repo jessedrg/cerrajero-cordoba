@@ -33,7 +33,8 @@ import {
   FileText,
   Trash2,
   ImageOff,
-  Users
+  Users,
+  RefreshCw
 } from "lucide-react"
 import {
   AlertDialog,
@@ -107,12 +108,12 @@ export default function PaginasPage() {
     }
   }
 
-  // Base images for random selection
+  // Base images for random selection - same as HeroImageEditor
   const BASE_IMAGES = [
-    "/images/cerrajero-1.png",
-    "/images/cerrajero-2.png", 
-    "/images/cerrajero-3.png",
-    "/images/cerrajero-4.png",
+    "/images/bases/trabajador-1.jpeg",
+    "/images/bases/trabajador-2.jpeg", 
+    "/images/bases/trabajador-3.jpeg",
+    "/images/bases/trabajador-4.jpeg",
   ]
   
   // Random taglines
@@ -355,11 +356,15 @@ export default function PaginasPage() {
         
         const uploadData = await uploadRes.json()
         
-        // Update page with the image URL
+        // Update page with the image URL AND publish it
         const updateRes = await fetch(`/api/admin/pages/${page.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ hero_image_url: uploadData.url })
+          body: JSON.stringify({ 
+            hero_image_url: uploadData.url,
+            status: "published",
+            published_at: new Date().toISOString()
+          })
         })
         
         if (updateRes.ok) {
@@ -374,6 +379,89 @@ export default function PaginasPage() {
     }
     
     setBulkProgress({ current: pagesWithoutImages.length, total: pagesWithoutImages.length, status: `Completado! ${successCount} imágenes generadas` })
+    
+    setTimeout(() => {
+      setBulkPublishing(false)
+      fetchPages()
+    }, 2000)
+  }
+
+  // Regenerate ALL images (even existing ones)
+  const regenerateAllImages = async () => {
+    if (pages.length === 0) {
+      alert("No hay páginas para regenerar")
+      return
+    }
+    
+    if (!confirm(`Se van a REGENERAR imágenes para TODAS las ${pages.length} páginas. Esto reemplazará las imágenes existentes. ¿Continuar?`)) {
+      return
+    }
+    
+    setBulkPublishing(true)
+    setBulkProgress({ current: 0, total: pages.length, status: "Regenerando todas..." })
+    
+    let successCount = 0
+    
+    for (let i = 0; i < pages.length; i++) {
+      const page = pages[i]
+      const cityName = page.cities?.name || "Ciudad"
+      const serviceName = page.services?.name || "Cerrajero"
+      
+      setBulkProgress({ 
+        current: i + 1, 
+        total: pages.length, 
+        status: `Regenerando: ${serviceName} en ${cityName}` 
+      })
+      
+      try {
+        // Generate image in browser
+        const blob = await generateImageBlob(serviceName, cityName)
+        
+        // Upload to Blob storage
+        const safeCityName = cityName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+        const safeServiceName = serviceName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+        const filename = `hero-${safeServiceName}-${safeCityName}-${Date.now()}.jpg`
+        const file = new File([blob], filename, { type: "image/jpeg" })
+        
+        const formData = new FormData()
+        formData.append("file", file)
+        formData.append("folder", "pages")
+        formData.append("optimize", "false")
+        
+        const uploadRes = await fetch("/api/admin/upload", {
+          method: "POST",
+          body: formData
+        })
+        
+        if (!uploadRes.ok) {
+          throw new Error("Upload failed")
+        }
+        
+        const uploadData = await uploadRes.json()
+        
+        // Update page with the image URL AND publish it
+        const updateRes = await fetch(`/api/admin/pages/${page.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            hero_image_url: uploadData.url,
+            status: "published",
+            published_at: new Date().toISOString()
+          })
+        })
+        
+        if (updateRes.ok) {
+          successCount++
+        }
+      } catch (error) {
+        console.error(`Error processing ${page.slug}:`, error)
+      }
+      
+      // Small delay
+      await new Promise(r => setTimeout(r, 300))
+    }
+    
+    setBulkProgress({ current: pages.length, total: pages.length, status: `Completado! ${successCount} imágenes regeneradas` })
     
     setTimeout(() => {
       setBulkPublishing(false)
@@ -435,6 +523,24 @@ export default function PaginasPage() {
         <div className="flex gap-2">
           <Button 
             variant="outline"
+            onClick={regenerateAllImages}
+            disabled={bulkPublishing}
+            className="border-blue-200 text-blue-600 hover:bg-blue-50"
+          >
+            {bulkPublishing ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                {bulkProgress.current}/{bulkProgress.total}
+              </>
+            ) : (
+              <>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Regenerar Todas
+              </>
+            )}
+          </Button>
+          <Button 
+            variant="outline"
             onClick={bulkPublish}
             disabled={bulkPublishing}
             className="border-orange-200 text-orange-600 hover:bg-orange-50"
@@ -447,7 +553,7 @@ export default function PaginasPage() {
             ) : (
               <>
                 <ImageOff className="h-4 w-4 mr-2" />
-                Publicar en Bulk
+                Publicar Sin Imagen
               </>
             )}
           </Button>
