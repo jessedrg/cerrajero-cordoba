@@ -384,10 +384,11 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
       const filename = `hero-${safeServiceName}-${safeCityName}-${Date.now()}.jpg`
       const file = new File([blob], filename, { type: "image/jpeg" })
       
-      // Create FormData and upload
+      // Create FormData and upload - skip optimization since canvas already outputs optimized JPEG
       const formData = new FormData()
       formData.append("file", file)
       formData.append("folder", "pages")
+      formData.append("optimize", "false")
       
       const response = await fetch("/api/admin/upload", {
         method: "POST",
