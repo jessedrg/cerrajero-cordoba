@@ -147,7 +147,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
   const [stripeColor, setStripeColor] = useState("#f59e0b")
   const [showStripe, setShowStripe] = useState(true)
 
-  // Generate random configuration
+  // Generate configuration using PAGE CONTEXT (service and city from props)
   const generateRandom = useCallback(() => {
     setGenerating(true)
     
@@ -155,14 +155,11 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     const randomImage = BASE_IMAGES[Math.floor(Math.random() * BASE_IMAGES.length)]
     setSelectedImage(randomImage.src)
     
-    // Random city and service
-    const randomCity = CITIES[Math.floor(Math.random() * CITIES.length)]
-    const randomService = SERVICES[Math.floor(Math.random() * SERVICES.length)]
+    // USE PAGE CONTEXT - serviceName and cityName from props
     const randomTagline = TAGLINES[Math.floor(Math.random() * TAGLINES.length)]
     
     // Random positions (within safe areas)
-    const randomX = () => 30 + Math.random() * 40
-    const randomY = () => 20 + Math.random() * 30
+    const baseX = 25 + Math.random() * 15  // Keep text on left side
     
     // Random colors
     const colors = ["#1e293b", "#0f172a", "#334155", "#1e40af", "#7c2d12"]
@@ -171,10 +168,11 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     const randomColor = colors[Math.floor(Math.random() * colors.length)]
     const randomAccent = accentColors[Math.floor(Math.random() * accentColors.length)]
     
+    // Title uses page context: serviceName + cityName
     setTitleConfig(prev => ({
       ...prev,
-      text: `${randomService} en ${randomCity}`,
-      x: randomX(),
+      text: `${serviceName} en ${cityName}`,
+      x: baseX,
       y: 25 + Math.random() * 10,
       color: randomColor
     }))
@@ -182,7 +180,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     setSubtitleConfig(prev => ({
       ...prev,
       text: "Servicio profesional 24 horas",
-      x: randomX(),
+      x: baseX,
       y: 40 + Math.random() * 10,
       color: "#475569"
     }))
@@ -190,22 +188,28 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     setTaglineConfig(prev => ({
       ...prev,
       text: randomTagline,
-      x: randomX(),
+      x: baseX,
       y: 52 + Math.random() * 8,
       color: randomAccent
     }))
     
     setPhoneBadge(prev => ({
       ...prev,
-      x: 30 + Math.random() * 20,
+      x: baseX,
       y: 68 + Math.random() * 10,
       bgColor: randomAccent
+    }))
+    
+    setWhatsappBadge(prev => ({
+      ...prev,
+      x: baseX + 20,
+      y: 68 + Math.random() * 10
     }))
     
     setStripeColor(randomAccent)
     
     setTimeout(() => setGenerating(false), 500)
-  }, [])
+  }, [serviceName, cityName])
 
   // Export as image using html2canvas
   const exportImage = async () => {
@@ -273,21 +277,12 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
               ) : (
                 <Sparkles className="h-4 w-4 mr-2" />
               )}
-              Generar aleatorio
+              Generar con IA
             </Button>
             
             <Button type="button" variant="outline" onClick={exportImage}>
               <Download className="h-4 w-4 mr-2" />
               Exportar PNG
-            </Button>
-            
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => quickUpdateTitle(cityName, serviceName)}
-            >
-              <RotateCcw className="h-4 w-4 mr-2" />
-              Usar datos de página
             </Button>
           </div>
 
