@@ -240,7 +240,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     setTimeout(() => setGenerating(false), 300)
   }, [serviceName, cityName])
 
-  // Generate image using native Canvas API - EXACT rendering guaranteed
+  // Generate image using native Canvas API - EXACT rendering matching preview
   const generateCanvasImage = useCallback(async (): Promise<Blob> => {
     const WIDTH = 1200
     const HEIGHT = 630
@@ -255,29 +255,55 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     ctx.fillStyle = "#ffffff"
     ctx.fillRect(0, 0, WIDTH, HEIGHT)
     
-    // Load and draw background image
+    // Load and draw background image (cover + top aligned like CSS)
     const img = new Image()
     img.crossOrigin = "anonymous"
     await new Promise<void>((resolve, reject) => {
       img.onload = () => resolve()
       img.onerror = reject
-      img.src = selectedImage
+      // Use full URL for images
+      const imgSrc = selectedImage.startsWith("/") ? window.location.origin + selectedImage : selectedImage
+      img.src = imgSrc
     })
-    ctx.drawImage(img, 0, 0, WIDTH, HEIGHT)
     
-    // Draw gradient overlay (left to right, white to transparent)
-    const gradient = ctx.createLinearGradient(0, 0, WIDTH * 0.7, 0)
+    // Calculate object-fit: cover + object-position: top
+    const imgRatio = img.width / img.height
+    const canvasRatio = WIDTH / HEIGHT
+    let drawWidth, drawHeight, drawX, drawY
+    
+    if (imgRatio > canvasRatio) {
+      // Image is wider - fit height, crop sides
+      drawHeight = HEIGHT
+      drawWidth = HEIGHT * imgRatio
+      drawX = (WIDTH - drawWidth) / 2
+      drawY = 0
+    } else {
+      // Image is taller - fit width, crop from top (object-position: top)
+      drawWidth = WIDTH
+      drawHeight = WIDTH / imgRatio
+      drawX = 0
+      drawY = 0 // top aligned
+    }
+    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight)
+    
+    // Draw gradient overlay - EXACTLY matching preview CSS
+    const gradient = ctx.createLinearGradient(0, 0, WIDTH, 0)
     gradient.addColorStop(0, "rgba(255,255,255,0.95)")
-    gradient.addColorStop(0.5, "rgba(255,255,255,0.75)")
-    gradient.addColorStop(1, "rgba(255,255,255,0)")
+    gradient.addColorStop(0.4, "rgba(255,255,255,0.75)")
+    gradient.addColorStop(0.7, "rgba(255,255,255,0)")
     ctx.fillStyle = gradient
     ctx.fillRect(0, 0, WIDTH, HEIGHT)
     
-    // Draw stripe
+    // Draw stripe (8px wide)
     if (showStripe) {
       ctx.fillStyle = stripeColor
       ctx.fillRect(0, 0, 8, HEIGHT)
     }
+    
+    // Scale factor: preview uses % positions that map to the actual rendered size
+    // In the exported image (1200x630), we need to scale the font sizes proportionally
+    // Preview at ~600px wide means fonts need to be ~2x bigger for 1200px canvas
+    const scaleFactor = 2
     
     // Helper to convert percentage to pixels
     const xPx = (pct: number) => (pct / 100) * WIDTH
@@ -285,74 +311,81 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     
     // Draw title
     if (titleConfig.visible) {
+      const fontSize = titleConfig.size * scaleFactor
       ctx.fillStyle = titleConfig.color
-      ctx.font = `${titleConfig.fontWeight === "bold" ? "bold" : "normal"} ${titleConfig.size}px system-ui, -apple-system, sans-serif`
+      ctx.font = `${titleConfig.fontWeight === "bold" ? "bold" : "normal"} ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
       ctx.textBaseline = "middle"
       ctx.fillText(titleConfig.text, xPx(titleConfig.x), yPx(titleConfig.y))
     }
     
     // Draw subtitle
     if (subtitleConfig.visible) {
+      const fontSize = subtitleConfig.size * scaleFactor
       ctx.fillStyle = subtitleConfig.color
-      ctx.font = `${subtitleConfig.fontWeight === "bold" ? "bold" : "normal"} ${subtitleConfig.size}px system-ui, -apple-system, sans-serif`
+      ctx.font = `${subtitleConfig.fontWeight === "bold" ? "bold" : "normal"} ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
       ctx.textBaseline = "middle"
       ctx.fillText(subtitleConfig.text, xPx(subtitleConfig.x), yPx(subtitleConfig.y))
     }
     
     // Draw tagline
     if (taglineConfig.visible) {
+      const fontSize = taglineConfig.size * scaleFactor
       ctx.fillStyle = taglineConfig.color
-      ctx.font = `${taglineConfig.fontWeight === "semibold" ? "600" : "normal"} ${taglineConfig.size}px system-ui, -apple-system, sans-serif`
+      ctx.font = `${taglineConfig.fontWeight === "semibold" ? "600" : "normal"} ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
       ctx.textBaseline = "middle"
       ctx.fillText(taglineConfig.text, xPx(taglineConfig.x), yPx(taglineConfig.y))
     }
     
-    // Draw phone badge (rectangle with text)
+    // Draw phone badge
     if (phoneBadge.visible) {
       const badgeX = xPx(phoneBadge.x)
       const badgeY = yPx(phoneBadge.y)
-      const padding = 12
-      const fontSize = 18
+      const fontSize = 18 * scaleFactor
+      const paddingX = 20 * scaleFactor
+      const paddingY = 10 * scaleFactor
       
-      ctx.font = `bold ${fontSize}px system-ui, -apple-system, sans-serif`
+      ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
       const textWidth = ctx.measureText(phoneBadge.text).width
+      const boxHeight = fontSize + paddingY * 2
       
-      // Draw background
+      // Draw background rectangle
       ctx.fillStyle = phoneBadge.bgColor
-      ctx.fillRect(badgeX, badgeY - fontSize/2 - padding, textWidth + padding*2, fontSize + padding*2)
+      ctx.fillRect(badgeX, badgeY - boxHeight/2, textWidth + paddingX * 2, boxHeight)
       
       // Draw text
       ctx.fillStyle = phoneBadge.textColor
       ctx.textBaseline = "middle"
-      ctx.fillText(phoneBadge.text, badgeX + padding, badgeY)
+      ctx.fillText(phoneBadge.text, badgeX + paddingX, badgeY)
     }
     
-    // Draw whatsapp badge (rectangle with text)
+    // Draw whatsapp badge
     if (whatsappBadge.visible) {
       const badgeX = xPx(whatsappBadge.x)
       const badgeY = yPx(whatsappBadge.y)
-      const padding = 12
-      const fontSize = 18
+      const fontSize = 18 * scaleFactor
+      const paddingX = 20 * scaleFactor
+      const paddingY = 10 * scaleFactor
       
-      ctx.font = `600 ${fontSize}px system-ui, -apple-system, sans-serif`
+      ctx.font = `600 ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
       const textWidth = ctx.measureText(whatsappBadge.text).width
+      const boxHeight = fontSize + paddingY * 2
       
-      // Draw background
+      // Draw background rectangle
       ctx.fillStyle = whatsappBadge.bgColor
-      ctx.fillRect(badgeX, badgeY - fontSize/2 - padding, textWidth + padding*2, fontSize + padding*2)
+      ctx.fillRect(badgeX, badgeY - boxHeight/2, textWidth + paddingX * 2, boxHeight)
       
       // Draw text
       ctx.fillStyle = whatsappBadge.textColor
       ctx.textBaseline = "middle"
-      ctx.fillText(whatsappBadge.text, badgeX + padding, badgeY)
+      ctx.fillText(whatsappBadge.text, badgeX + paddingX, badgeY)
     }
     
-    // Convert to blob
+    // Convert to blob (high quality JPEG)
     return new Promise((resolve, reject) => {
       canvas.toBlob((blob) => {
         if (blob) resolve(blob)
         else reject(new Error("Failed to create blob"))
-      }, "image/jpeg", 0.92)
+      }, "image/jpeg", 0.95)
     })
   }, [selectedImage, showStripe, stripeColor, titleConfig, subtitleConfig, taglineConfig, phoneBadge, whatsappBadge])
 
