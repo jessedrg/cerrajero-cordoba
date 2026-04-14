@@ -588,7 +588,9 @@ export default function PaginasPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ 
             title: newTitle,
-            h1: newH1
+            h1: newH1,
+            status: "published",
+            published_at: new Date().toISOString()
           })
         })
         
