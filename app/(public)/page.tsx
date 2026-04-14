@@ -79,7 +79,7 @@ export default function HomePage() {
                   {PHONE_DISPLAY}
                 </a>
               </Button>
-              <Button size="lg" variant="outline" className="gap-2 text-lg border-slate-600 text-slate-200 hover:bg-slate-800 hover:text-white h-14 px-8" asChild>
+              <Button size="lg" className="gap-2 text-lg bg-transparent border-2 border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-slate-900 h-14 px-8" asChild>
                 <Link href="/cerrajero">
                   Ver servicios
                   <ArrowRight className="h-5 w-5" />
