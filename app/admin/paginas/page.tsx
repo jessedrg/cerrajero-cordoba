@@ -109,12 +109,12 @@ export default function PaginasPage() {
     }
   }
 
-  // Base images for random selection - same as HeroImageEditor
+  // Base images for random selection - cerrajeros profesionales
   const BASE_IMAGES = [
-    "/images/bases/trabajador-1.jpeg",
-    "/images/bases/trabajador-2.jpeg", 
-    "/images/bases/trabajador-3.jpeg",
-    "/images/bases/trabajador-4.jpeg",
+    "/images/bases/cerrajero-1.jpeg",
+    "/images/bases/cerrajero-2.jpeg", 
+    "/images/bases/cerrajero-3.jpeg",
+    "/images/bases/cerrajero-4.jpeg",
   ]
   
   // Taglines por tipo de servicio

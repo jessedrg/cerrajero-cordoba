@@ -26,12 +26,12 @@ import {
 } from "lucide-react"
 import { ImageUploader } from "./image-uploader"
 
-// Base images
+// Base images - cerrajeros profesionales
 const BASE_IMAGES = [
-  { id: 1, src: "/images/bases/trabajador-1.jpeg", name: "Trabajador 1" },
-  { id: 2, src: "/images/bases/trabajador-2.jpeg", name: "Trabajador 2" },
-  { id: 3, src: "/images/bases/trabajador-3.jpeg", name: "Trabajador 3" },
-  { id: 4, src: "/images/bases/trabajador-4.jpeg", name: "Trabajador 4" },
+  { id: 1, src: "/images/bases/cerrajero-1.jpeg", name: "Javier - Llaves" },
+  { id: 2, src: "/images/bases/cerrajero-2.jpeg", name: "Pablo - Puerta" },
+  { id: 3, src: "/images/bases/cerrajero-3.jpeg", name: "Javier - Sonriendo" },
+  { id: 4, src: "/images/bases/cerrajero-4.jpeg", name: "Carlos - Caja fuerte" },
 ]
 
 // Cities list
