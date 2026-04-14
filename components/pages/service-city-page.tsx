@@ -520,9 +520,9 @@ export function ServiceCityPage({
         {/* Hero con configuración din��mica */}
         {heroEnabled && (
           <HeroSection
-            title={page.h1}
+            title={page.title || `${service.name} en ${cityData.name}`}
             titleVariant={page.h1_variant}
-            subtitle={undefined}
+            subtitle={page.h1}
             showButtons={false}
             highlight={page.highlight || page.intro_highlight}
             imageUrl={heroImage}
