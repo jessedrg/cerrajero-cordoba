@@ -107,25 +107,221 @@ export default function PaginasPage() {
     }
   }
 
+  // Base images for random selection
+  const BASE_IMAGES = [
+    "/images/cerrajero-1.png",
+    "/images/cerrajero-2.png", 
+    "/images/cerrajero-3.png",
+    "/images/cerrajero-4.png",
+  ]
+  
+  // Random taglines
+  const TAGLINES = [
+    "Servicio 24 horas",
+    "Llegamos en 15-30 minutos",
+    "Presupuesto sin compromiso",
+    "Profesionales certificados",
+    "Urgencias atendidas al momento",
+  ]
+  
+  // Color palettes
+  const TITLE_COLORS = ["#1e293b", "#0f172a", "#1e40af", "#0c4a6e", "#14532d", "#4c1d95", "#831843"]
+  const ACCENT_COLORS = ["#f59e0b", "#ef4444", "#22c55e", "#3b82f6", "#8b5cf6", "#ec4899", "#14b8a6", "#f97316"]
+  const SUBTITLE_COLORS = ["#475569", "#64748b", "#6b7280", "#71717a"]
+  
+  // Generate image on canvas - SAME logic as HeroImageEditor
+  const generateImageBlob = async (
+    serviceName: string, 
+    cityName: string
+  ): Promise<Blob> => {
+    const WIDTH = 1200
+    const HEIGHT = 630
+    
+    const canvas = document.createElement("canvas")
+    canvas.width = WIDTH
+    canvas.height = HEIGHT
+    const ctx = canvas.getContext("2d")!
+    
+    // Random selections
+    const randomImage = BASE_IMAGES[Math.floor(Math.random() * BASE_IMAGES.length)]
+    const titleColor = TITLE_COLORS[Math.floor(Math.random() * TITLE_COLORS.length)]
+    const accentColor = ACCENT_COLORS[Math.floor(Math.random() * ACCENT_COLORS.length)]
+    const subtitleColor = SUBTITLE_COLORS[Math.floor(Math.random() * SUBTITLE_COLORS.length)]
+    const tagline = TAGLINES[Math.floor(Math.random() * TAGLINES.length)]
+    const showPhoneBadge = Math.random() > 0.2 // 80% chance
+    const showWhatsappBadge = Math.random() > 0.3 // 70% chance
+    const showStripe = Math.random() > 0.3 // 70% chance
+    
+    // Random font sizes
+    const titleSize = Math.floor(42 + Math.random() * 10) * 2 // 84-104px
+    const subtitleSize = Math.floor(20 + Math.random() * 6) * 2 // 40-52px
+    const taglineSize = Math.floor(16 + Math.random() * 6) * 2 // 32-44px
+    
+    // Fill white background
+    ctx.fillStyle = "#ffffff"
+    ctx.fillRect(0, 0, WIDTH, HEIGHT)
+    
+    // Load and draw background image
+    const img = new Image()
+    img.crossOrigin = "anonymous"
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve()
+      img.onerror = () => resolve() // Continue even if image fails
+      img.src = window.location.origin + randomImage
+    })
+    
+    if (img.complete && img.naturalWidth > 0) {
+      const imgRatio = img.width / img.height
+      const canvasRatio = WIDTH / HEIGHT
+      let drawWidth, drawHeight, drawX, drawY
+      
+      if (imgRatio > canvasRatio) {
+        drawHeight = HEIGHT
+        drawWidth = HEIGHT * imgRatio
+        drawX = (WIDTH - drawWidth) / 2
+        drawY = 0
+      } else {
+        drawWidth = WIDTH
+        drawHeight = WIDTH / imgRatio
+        drawX = 0
+        drawY = 0
+      }
+      ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight)
+    }
+    
+    // Draw gradient overlay
+    const gradient = ctx.createLinearGradient(0, 0, WIDTH, 0)
+    gradient.addColorStop(0, "rgba(255,255,255,0.95)")
+    gradient.addColorStop(0.4, "rgba(255,255,255,0.75)")
+    gradient.addColorStop(0.7, "rgba(255,255,255,0)")
+    ctx.fillStyle = gradient
+    ctx.fillRect(0, 0, WIDTH, HEIGHT)
+    
+    // Draw stripe
+    if (showStripe) {
+      ctx.fillStyle = accentColor
+      ctx.fillRect(0, 0, 8, HEIGHT)
+    }
+    
+    // Text wrapping helper
+    const wrapText = (text: string, maxWidth: number, fontSize: number): string[] => {
+      ctx.font = `bold ${fontSize}px system-ui, -apple-system, sans-serif`
+      const words = text.split(' ')
+      const lines: string[] = []
+      let currentLine = ''
+      
+      for (const word of words) {
+        const testLine = currentLine ? `${currentLine} ${word}` : word
+        if (ctx.measureText(testLine).width > maxWidth && currentLine) {
+          lines.push(currentLine)
+          currentLine = word
+        } else {
+          currentLine = testLine
+        }
+      }
+      if (currentLine) lines.push(currentLine)
+      return lines
+    }
+    
+    // Sequential layout
+    let currentY = 80
+    const leftMargin = WIDTH * 0.05
+    const maxTextWidth = WIDTH * 0.50
+    const verticalGap = 20
+    
+    // Draw title
+    ctx.fillStyle = titleColor
+    ctx.font = `bold ${titleSize}px system-ui, -apple-system, sans-serif`
+    ctx.textBaseline = "top"
+    const titleText = `${serviceName} en ${cityName}`
+    const titleLines = wrapText(titleText, maxTextWidth, titleSize)
+    const lineHeight = titleSize * 1.15
+    
+    titleLines.forEach((line, i) => {
+      ctx.fillText(line, leftMargin, currentY + i * lineHeight)
+    })
+    currentY += titleLines.length * lineHeight + verticalGap
+    
+    // Draw subtitle
+    ctx.fillStyle = subtitleColor
+    ctx.font = `normal ${subtitleSize}px system-ui, -apple-system, sans-serif`
+    ctx.fillText("Servicio profesional 24 horas", leftMargin, currentY)
+    currentY += subtitleSize + verticalGap
+    
+    // Draw tagline
+    ctx.fillStyle = accentColor
+    ctx.font = `600 ${taglineSize}px system-ui, -apple-system, sans-serif`
+    ctx.fillText(tagline, leftMargin, currentY)
+    currentY += taglineSize + verticalGap + 10
+    
+    // Badges
+    const badgeFontSize = 36
+    const badgePaddingX = 32
+    const badgePaddingY = 16
+    const badgeGap = 24
+    
+    let badgeX = leftMargin
+    
+    if (showPhoneBadge) {
+      ctx.font = `bold ${badgeFontSize}px system-ui, -apple-system, sans-serif`
+      const phoneText = "900 433 189"
+      const textWidth = ctx.measureText(phoneText).width
+      const boxWidth = textWidth + badgePaddingX * 2
+      const boxHeight = badgeFontSize + badgePaddingY * 2
+      
+      ctx.fillStyle = accentColor
+      ctx.fillRect(badgeX, currentY, boxWidth, boxHeight)
+      ctx.fillStyle = "#ffffff"
+      ctx.textBaseline = "top"
+      ctx.fillText(phoneText, badgeX + badgePaddingX, currentY + badgePaddingY)
+      
+      badgeX += boxWidth + badgeGap
+    }
+    
+    if (showWhatsappBadge) {
+      ctx.font = `600 ${badgeFontSize}px system-ui, -apple-system, sans-serif`
+      const whatsappText = "cerrajerocordoba.es"
+      const textWidth = ctx.measureText(whatsappText).width
+      const boxWidth = textWidth + badgePaddingX * 2
+      const boxHeight = badgeFontSize + badgePaddingY * 2
+      
+      ctx.fillStyle = "#22c55e"
+      ctx.fillRect(badgeX, currentY, boxWidth, boxHeight)
+      ctx.fillStyle = "#ffffff"
+      ctx.textBaseline = "top"
+      ctx.fillText(whatsappText, badgeX + badgePaddingX, currentY + badgePaddingY)
+    }
+    
+    // Convert to blob
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob)
+        else reject(new Error("Failed to create blob"))
+      }, "image/jpeg", 0.92)
+    })
+  }
+
   // Bulk publish pages without hero images
   const bulkPublish = async () => {
-    const pagesWithoutImages = pages.filter(p => !p.hero_image_url && p.status !== "published")
+    const pagesWithoutImages = pages.filter(p => !p.hero_image_url)
     if (pagesWithoutImages.length === 0) {
       alert("No hay páginas sin imagen para publicar en bulk")
       return
     }
     
-    if (!confirm(`Se van a generar imágenes y publicar ${pagesWithoutImages.length} páginas. ¿Continuar?`)) {
+    if (!confirm(`Se van a generar imágenes para ${pagesWithoutImages.length} páginas. ¿Continuar?`)) {
       return
     }
     
     setBulkPublishing(true)
     setBulkProgress({ current: 0, total: pagesWithoutImages.length, status: "Iniciando..." })
     
+    let successCount = 0
+    
     for (let i = 0; i < pagesWithoutImages.length; i++) {
       const page = pagesWithoutImages[i]
       const cityName = page.cities?.name || "Ciudad"
-      const serviceName = page.services?.name || "Servicio"
+      const serviceName = page.services?.name || "Cerrajero"
       
       setBulkProgress({ 
         current: i + 1, 
@@ -134,29 +330,55 @@ export default function PaginasPage() {
       })
       
       try {
-        // Call the bulk generate API
-        const res = await fetch("/api/admin/pages/bulk-generate", {
+        // Generate image in browser
+        const blob = await generateImageBlob(serviceName, cityName)
+        
+        // Upload to Blob storage
+        const safeCityName = cityName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+        const safeServiceName = serviceName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+        const filename = `hero-${safeServiceName}-${safeCityName}-${Date.now()}.jpg`
+        const file = new File([blob], filename, { type: "image/jpeg" })
+        
+        const formData = new FormData()
+        formData.append("file", file)
+        formData.append("folder", "pages")
+        formData.append("optimize", "false")
+        
+        const uploadRes = await fetch("/api/admin/upload", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ pageId: page.id })
+          body: formData
         })
         
-        if (!res.ok) {
-          console.error(`Error generating image for ${page.slug}`)
+        if (!uploadRes.ok) {
+          throw new Error("Upload failed")
+        }
+        
+        const uploadData = await uploadRes.json()
+        
+        // Update page with the image URL
+        const updateRes = await fetch(`/api/admin/pages/${page.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ hero_image_url: uploadData.url })
+        })
+        
+        if (updateRes.ok) {
+          successCount++
         }
       } catch (error) {
         console.error(`Error processing ${page.slug}:`, error)
       }
       
-      // Small delay to avoid overwhelming the server
-      await new Promise(r => setTimeout(r, 500))
+      // Small delay
+      await new Promise(r => setTimeout(r, 300))
     }
     
-    setBulkProgress({ current: pagesWithoutImages.length, total: pagesWithoutImages.length, status: "Completado!" })
-    setBulkPublishing(false)
+    setBulkProgress({ current: pagesWithoutImages.length, total: pagesWithoutImages.length, status: `Completado! ${successCount} imágenes generadas` })
     
-    // Refresh pages list
-    fetchPages()
+    setTimeout(() => {
+      setBulkPublishing(false)
+      fetchPages()
+    }, 2000)
   }
 
   const filteredPages = pages.filter(page => {
