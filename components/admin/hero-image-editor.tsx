@@ -20,7 +20,9 @@ import {
   MessageCircle,
   Loader2,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Check,
+  Upload
 } from "lucide-react"
 import { ImageUploader } from "./image-uploader"
 
@@ -88,6 +90,7 @@ interface HeroImageEditorProps {
 export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", cityName = "Córdoba" }: HeroImageEditorProps) {
   const canvasRef = useRef<HTMLDivElement>(null)
   const [generating, setGenerating] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [expanded, setExpanded] = useState(false)
   
   // Selected base image
@@ -241,6 +244,58 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     }))
   }
 
+  // Use this image - generate and upload directly
+  const useThisImage = async () => {
+    if (!canvasRef.current) return
+    
+    setUploading(true)
+    try {
+      const html2canvas = (await import("html2canvas")).default
+      const canvas = await html2canvas(canvasRef.current, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "#ffffff"
+      })
+      
+      // Convert canvas to blob
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob)
+          else reject(new Error("Failed to create blob"))
+        }, "image/png", 0.95)
+      })
+      
+      // Create FormData and upload
+      const formData = new FormData()
+      formData.append("file", blob, `hero-${Date.now()}.png`)
+      formData.append("folder", "pages")
+      formData.append("optimize", "true")
+      
+      const response = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData
+      })
+      
+      if (!response.ok) {
+        throw new Error("Upload failed")
+      }
+      
+      const data = await response.json()
+      
+      // Update the form with the new URL
+      onChange(data.url)
+      
+      // Collapse the editor
+      setExpanded(false)
+    } catch (error) {
+      console.error("Error uploading image:", error)
+      alert("Error al subir la imagen. Inténtalo de nuevo.")
+    } finally {
+      setUploading(false)
+    }
+  }
+
   return (
     <div className="space-y-4">
       {/* Collapsed view - just the uploader */}
@@ -282,7 +337,21 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
             
             <Button type="button" variant="outline" onClick={exportImage}>
               <Download className="h-4 w-4 mr-2" />
-              Exportar PNG
+              Descargar PNG
+            </Button>
+
+            <Button 
+              type="button" 
+              onClick={useThisImage}
+              disabled={uploading}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              {uploading ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Check className="h-4 w-4 mr-2" />
+              )}
+              {uploading ? "Subiendo..." : "Usar esta imagen"}
             </Button>
           </div>
 
