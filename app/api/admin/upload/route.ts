@@ -75,17 +75,14 @@ export async function POST(request: NextRequest) {
       filename = `${folder}/${timestamp}-${randomStr}.${extension}`
     }
 
-    // Upload to Vercel Blob (private store)
+    // Upload to Vercel Blob (public store)
     const blob = await put(filename, finalBuffer, {
-      access: "private",
+      access: "public",
       contentType: optimize ? "image/webp" : file.type,
     })
 
-    // For private blobs, return a URL that goes through our file serving route
-    const serveUrl = `/api/file?pathname=${encodeURIComponent(blob.pathname)}`
-
     return NextResponse.json({ 
-      url: serveUrl,
+      url: blob.url,
       pathname: blob.pathname,
       optimized: optimize,
       originalSize: file.size,
