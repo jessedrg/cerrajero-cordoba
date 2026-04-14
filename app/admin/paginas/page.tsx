@@ -470,49 +470,57 @@ export default function PaginasPage() {
     }, 2000)
   }
 
-  // Generate SEO-optimized title for Google
+  // Generate SEO-optimized title for Google - SIMPLE and NATURAL
   const generateSEOTitle = (serviceName: string, cityName: string): string => {
-    // Emojis to use randomly
-    const emojis = ["🔧", "⚡", "🔑", "🚨", "📞", "✅", "💪", "🏠", "⏰", "🛠️", ""]
+    // Emojis - sometimes used, sometimes not
+    const emojis = ["🔧", "⚡", "🔑", "🚨", "📞", "✅", "🏠", "🛠️", ""]
     
-    // Title templates focused on urgency, service, zone, price
+    // SIMPLE title templates - natural and focused on SEO
     const templates = [
-      // Urgency focused
-      `{emoji} {servicio} URGENTE en {ciudad} | 24 Horas`,
-      `{servicio} Urgente en {ciudad} {emoji} Llegamos en 15 min`,
-      `{emoji} {servicio} 24h en {ciudad} - Servicio Rápido`,
-      `Urgencias {servicio} {ciudad} {emoji} Disponible Ahora`,
-      `{servicio} de Urgencia en {ciudad} {emoji} 24/7`,
+      // Super simple (most common)
+      `{servicio} en {ciudad}`,
+      `{servicio} en {ciudad}`,
+      `{servicio} en {ciudad}`,
+      `{servicio} {ciudad}`,
+      `{servicio} {ciudad}`,
       
-      // Price focused
-      `{servicio} en {ciudad} {emoji} Precios Económicos`,
-      `{emoji} {servicio} Barato en {ciudad} | Presupuesto Gratis`,
-      `{servicio} {ciudad} Económico {emoji} Sin Compromiso`,
-      `{emoji} {servicio} en {ciudad} - Mejor Precio Garantizado`,
-      `{servicio} Profesional {ciudad} {emoji} Precios Justos`,
+      // With emoji simple
+      `{emoji} {servicio} en {ciudad}`,
+      `{servicio} en {ciudad} {emoji}`,
+      `{emoji} {servicio} {ciudad}`,
       
-      // Local/Zone focused
-      `{servicio} en {ciudad} y Alrededores {emoji}`,
-      `{emoji} Tu {servicio} de Confianza en {ciudad}`,
-      `{servicio} Local en {ciudad} {emoji} Rápido y Fiable`,
-      `{emoji} {servicio} Cerca de Ti en {ciudad}`,
-      `Mejor {servicio} en {ciudad} {emoji} Opiniones 5★`,
+      // Urgente variations
+      `{servicio} Urgente en {ciudad}`,
+      `{servicio} Urgente {ciudad}`,
+      `{emoji} {servicio} Urgente en {ciudad}`,
+      `{servicio} 24h en {ciudad}`,
+      `{servicio} 24 Horas {ciudad}`,
       
-      // Combined urgency + price
-      `{emoji} {servicio} Urgente y Barato en {ciudad}`,
-      `{servicio} 24h {ciudad} {emoji} Económico y Rápido`,
-      `{emoji} {servicio} en {ciudad} | Urgencias al Mejor Precio`,
-      `{servicio} Rápido en {ciudad} {emoji} Precios Sin Sorpresas`,
+      // Barato/Economico
+      `{servicio} Barato en {ciudad}`,
+      `{servicio} Economico {ciudad}`,
+      `{servicio} en {ciudad} Barato`,
+      `{emoji} {servicio} Barato {ciudad}`,
       
-      // Question format
-      `¿Necesitas {servicio} en {ciudad}? {emoji} Llámanos`,
-      `¿Buscas {servicio} Urgente en {ciudad}? {emoji}`,
-      `{servicio} en {ciudad} {emoji} ¿Urgencia? Te Ayudamos`,
+      // Profesional
+      `{servicio} Profesional en {ciudad}`,
+      `{servicio} Profesional {ciudad}`,
       
-      // Action focused
-      `Llama Ahora: {servicio} en {ciudad} {emoji}`,
-      `{emoji} {servicio} {ciudad} - Resolvemos Hoy`,
-      `{servicio} Inmediato en {ciudad} {emoji} Llámanos`,
+      // Rapido
+      `{servicio} Rapido en {ciudad}`,
+      `{servicio} Rapido {ciudad}`,
+      
+      // Combined simple
+      `{servicio} Urgente Barato {ciudad}`,
+      `{servicio} 24h Barato en {ciudad}`,
+      `{servicio} Rapido y Barato {ciudad}`,
+      `{emoji} {servicio} Urgente y Economico {ciudad}`,
+      
+      // Zone focused
+      `{servicio} en {ciudad} y Zona`,
+      `{servicio} {ciudad} y Alrededores`,
+      `Tu {servicio} en {ciudad}`,
+      `Mejor {servicio} en {ciudad}`,
     ]
     
     // Select random template and emoji
