@@ -107,12 +107,12 @@ export default function PaginasPage() {
     }
   }
 
-  // Base images for random selection
+  // Base images for random selection - same as HeroImageEditor
   const BASE_IMAGES = [
-    "/images/cerrajero-1.png",
-    "/images/cerrajero-2.png", 
-    "/images/cerrajero-3.png",
-    "/images/cerrajero-4.png",
+    "/images/bases/trabajador-1.jpeg",
+    "/images/bases/trabajador-2.jpeg", 
+    "/images/bases/trabajador-3.jpeg",
+    "/images/bases/trabajador-4.jpeg",
   ]
   
   // Random taglines
