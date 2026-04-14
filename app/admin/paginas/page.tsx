@@ -66,6 +66,8 @@ export default function PaginasPage() {
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [bulkPublishing, setBulkPublishing] = useState(false)
+  const [bulkProgress, setBulkProgress] = useState({ current: 0, total: 0, status: "" })
 
   useEffect(() => {
     fetchPages()
@@ -103,6 +105,58 @@ export default function PaginasPage() {
     } finally {
       setDeleting(null)
     }
+  }
+
+  // Bulk publish pages without hero images
+  const bulkPublish = async () => {
+    const pagesWithoutImages = pages.filter(p => !p.hero_image_url && p.status !== "published")
+    if (pagesWithoutImages.length === 0) {
+      alert("No hay páginas sin imagen para publicar en bulk")
+      return
+    }
+    
+    if (!confirm(`Se van a generar imágenes y publicar ${pagesWithoutImages.length} páginas. ¿Continuar?`)) {
+      return
+    }
+    
+    setBulkPublishing(true)
+    setBulkProgress({ current: 0, total: pagesWithoutImages.length, status: "Iniciando..." })
+    
+    for (let i = 0; i < pagesWithoutImages.length; i++) {
+      const page = pagesWithoutImages[i]
+      const cityName = page.cities?.name || "Ciudad"
+      const serviceName = page.services?.name || "Servicio"
+      
+      setBulkProgress({ 
+        current: i + 1, 
+        total: pagesWithoutImages.length, 
+        status: `Generando: ${serviceName} en ${cityName}` 
+      })
+      
+      try {
+        // Call the bulk generate API
+        const res = await fetch("/api/admin/pages/bulk-generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pageId: page.id })
+        })
+        
+        if (!res.ok) {
+          console.error(`Error generating image for ${page.slug}`)
+        }
+      } catch (error) {
+        console.error(`Error processing ${page.slug}:`, error)
+      }
+      
+      // Small delay to avoid overwhelming the server
+      await new Promise(r => setTimeout(r, 500))
+    }
+    
+    setBulkProgress({ current: pagesWithoutImages.length, total: pagesWithoutImages.length, status: "Completado!" })
+    setBulkPublishing(false)
+    
+    // Refresh pages list
+    fetchPages()
   }
 
   const filteredPages = pages.filter(page => {
@@ -156,12 +210,32 @@ export default function PaginasPage() {
             {pages.length} páginas en total - {pages.filter(p => p.status === "published").length} publicadas
           </p>
         </div>
-        <Button asChild className="bg-orange-500 hover:bg-orange-600">
-          <Link href="/admin/nueva-pagina">
-            <Plus className="h-4 w-4 mr-2" />
-            Nueva Página
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline"
+            onClick={bulkPublish}
+            disabled={bulkPublishing}
+            className="border-orange-200 text-orange-600 hover:bg-orange-50"
+          >
+            {bulkPublishing ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                {bulkProgress.current}/{bulkProgress.total}
+              </>
+            ) : (
+              <>
+                <ImageOff className="h-4 w-4 mr-2" />
+                Publicar en Bulk
+              </>
+            )}
+          </Button>
+          <Button asChild className="bg-orange-500 hover:bg-orange-600">
+            <Link href="/admin/nueva-pagina">
+              <Plus className="h-4 w-4 mr-2" />
+              Nueva Página
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}

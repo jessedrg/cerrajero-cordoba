@@ -309,13 +309,43 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     const xPx = (pct: number) => (pct / 100) * WIDTH
     const yPx = (pct: number) => (pct / 100) * HEIGHT
     
-    // Draw title
+    // Helper function to wrap text that's too long
+    const wrapText = (text: string, maxWidth: number, fontSize: number): string[] => {
+      ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
+      const words = text.split(' ')
+      const lines: string[] = []
+      let currentLine = ''
+      
+      for (const word of words) {
+        const testLine = currentLine ? `${currentLine} ${word}` : word
+        const metrics = ctx.measureText(testLine)
+        if (metrics.width > maxWidth && currentLine) {
+          lines.push(currentLine)
+          currentLine = word
+        } else {
+          currentLine = testLine
+        }
+      }
+      if (currentLine) lines.push(currentLine)
+      return lines
+    }
+    
+    // Draw title - with text wrapping if needed
     if (titleConfig.visible) {
       const fontSize = titleConfig.size * scaleFactor
       ctx.fillStyle = titleConfig.color
       ctx.font = `${titleConfig.fontWeight === "bold" ? "bold" : "normal"} ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
       ctx.textBaseline = "middle"
-      ctx.fillText(titleConfig.text, xPx(titleConfig.x), yPx(titleConfig.y))
+      
+      // Max width is 55% of canvas to leave room for image on right
+      const maxWidth = WIDTH * 0.55
+      const lines = wrapText(titleConfig.text, maxWidth, fontSize)
+      const lineHeight = fontSize * 1.2
+      const startY = yPx(titleConfig.y) - ((lines.length - 1) * lineHeight) / 2
+      
+      lines.forEach((line, i) => {
+        ctx.fillText(line, xPx(titleConfig.x), startY + i * lineHeight)
+      })
     }
     
     // Draw subtitle
@@ -336,48 +366,50 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
       ctx.fillText(taglineConfig.text, xPx(taglineConfig.x), yPx(taglineConfig.y))
     }
     
-    // Draw phone badge
+    // Calculate badge positions - SAME Y coordinate to avoid overlap
+    const badgeY = yPx(phoneBadge.y)
+    const badgeFontSize = 18 * scaleFactor
+    const badgePaddingX = 16 * scaleFactor
+    const badgePaddingY = 8 * scaleFactor
+    const badgeGap = 12 * scaleFactor
+    
+    // Draw phone badge first to get its width
+    let phoneBadgeEndX = xPx(phoneBadge.x)
     if (phoneBadge.visible) {
       const badgeX = xPx(phoneBadge.x)
-      const badgeY = yPx(phoneBadge.y)
-      const fontSize = 18 * scaleFactor
-      const paddingX = 20 * scaleFactor
-      const paddingY = 10 * scaleFactor
-      
-      ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
+      ctx.font = `bold ${badgeFontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
       const textWidth = ctx.measureText(phoneBadge.text).width
-      const boxHeight = fontSize + paddingY * 2
+      const boxWidth = textWidth + badgePaddingX * 2
+      const boxHeight = badgeFontSize + badgePaddingY * 2
       
       // Draw background rectangle
       ctx.fillStyle = phoneBadge.bgColor
-      ctx.fillRect(badgeX, badgeY - boxHeight/2, textWidth + paddingX * 2, boxHeight)
+      ctx.fillRect(badgeX, badgeY - boxHeight/2, boxWidth, boxHeight)
       
       // Draw text
       ctx.fillStyle = phoneBadge.textColor
       ctx.textBaseline = "middle"
-      ctx.fillText(phoneBadge.text, badgeX + paddingX, badgeY)
+      ctx.fillText(phoneBadge.text, badgeX + badgePaddingX, badgeY)
+      
+      phoneBadgeEndX = badgeX + boxWidth
     }
     
-    // Draw whatsapp badge
+    // Draw whatsapp badge - positioned right after phone badge
     if (whatsappBadge.visible) {
-      const badgeX = xPx(whatsappBadge.x)
-      const badgeY = yPx(whatsappBadge.y)
-      const fontSize = 18 * scaleFactor
-      const paddingX = 20 * scaleFactor
-      const paddingY = 10 * scaleFactor
-      
-      ctx.font = `600 ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
+      const badgeX = phoneBadge.visible ? phoneBadgeEndX + badgeGap : xPx(whatsappBadge.x)
+      ctx.font = `600 ${badgeFontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
       const textWidth = ctx.measureText(whatsappBadge.text).width
-      const boxHeight = fontSize + paddingY * 2
+      const boxWidth = textWidth + badgePaddingX * 2
+      const boxHeight = badgeFontSize + badgePaddingY * 2
       
       // Draw background rectangle
       ctx.fillStyle = whatsappBadge.bgColor
-      ctx.fillRect(badgeX, badgeY - boxHeight/2, textWidth + paddingX * 2, boxHeight)
+      ctx.fillRect(badgeX, badgeY - boxHeight/2, boxWidth, boxHeight)
       
       // Draw text
       ctx.fillStyle = whatsappBadge.textColor
       ctx.textBaseline = "middle"
-      ctx.fillText(whatsappBadge.text, badgeX + paddingX, badgeY)
+      ctx.fillText(whatsappBadge.text, badgeX + badgePaddingX, badgeY)
     }
     
     // Convert to blob (high quality JPEG)
