@@ -96,10 +96,10 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
   // Selected base image
   const [selectedImage, setSelectedImage] = useState(BASE_IMAGES[0].src)
   
-  // Text configurations
+  // Text configurations - X is now "margin from left" (not center)
   const [titleConfig, setTitleConfig] = useState<TextConfig>({
     text: `${serviceName} en ${cityName}`,
-    x: 50,
+    x: 5,
     y: 30,
     size: 48,
     color: "#1e293b",
@@ -109,7 +109,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
   
   const [subtitleConfig, setSubtitleConfig] = useState<TextConfig>({
     text: "Servicio profesional 24 horas",
-    x: 50,
+    x: 5,
     y: 45,
     size: 24,
     color: "#475569",
@@ -119,7 +119,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
   
   const [taglineConfig, setTaglineConfig] = useState<TextConfig>({
     text: "Llegamos en 15-30 minutos",
-    x: 50,
+    x: 5,
     y: 55,
     size: 18,
     color: "#f59e0b",
@@ -130,7 +130,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
   // Badges
   const [phoneBadge, setPhoneBadge] = useState<BadgeConfig>({
     text: "900 433 189",
-    x: 50,
+    x: 5,
     y: 70,
     bgColor: "#f59e0b",
     textColor: "#1e293b",
@@ -139,7 +139,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
   
   const [whatsappBadge, setWhatsappBadge] = useState<BadgeConfig>({
     text: "WhatsApp",
-    x: 75,
+    x: 25,
     y: 70,
     bgColor: "#22c55e",
     textColor: "#ffffff",
@@ -161,8 +161,8 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     // USE PAGE CONTEXT - serviceName and cityName from props
     const randomTagline = TAGLINES[Math.floor(Math.random() * TAGLINES.length)]
     
-    // Random positions (within safe areas)
-    const baseX = 25 + Math.random() * 15  // Keep text on left side
+    // Random positions (margin from left edge - small values to avoid cutting)
+    const baseX = 3 + Math.random() * 5  // 3-8% margin from left
     
     // Random colors
     const colors = ["#1e293b", "#0f172a", "#334155", "#1e40af", "#7c2d12"]
@@ -199,14 +199,14 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     setPhoneBadge(prev => ({
       ...prev,
       x: baseX,
-      y: 68 + Math.random() * 10,
+      y: 68 + Math.random() * 8,
       bgColor: randomAccent
     }))
     
     setWhatsappBadge(prev => ({
       ...prev,
-      x: baseX + 20,
-      y: 68 + Math.random() * 10
+      x: baseX + 18,
+      y: 68 + Math.random() * 8
     }))
     
     setStripeColor(randomAccent)
@@ -418,7 +418,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                       whiteSpace: "nowrap",
                       left: `${titleConfig.x}%`,
                       top: `${titleConfig.y}%`,
-                      transform: "translate(-50%, -50%)",
+                      transform: "translateY(-50%)",
                       fontSize: `${titleConfig.size}px`,
                       color: titleConfig.color,
                       fontWeight: titleConfig.fontWeight === "bold" ? 700 : 400
@@ -436,7 +436,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                       whiteSpace: "nowrap",
                       left: `${subtitleConfig.x}%`,
                       top: `${subtitleConfig.y}%`,
-                      transform: "translate(-50%, -50%)",
+                      transform: "translateY(-50%)",
                       fontSize: `${subtitleConfig.size}px`,
                       color: subtitleConfig.color,
                       fontWeight: subtitleConfig.fontWeight === "bold" ? 700 : 400
@@ -454,7 +454,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                       whiteSpace: "nowrap",
                       left: `${taglineConfig.x}%`,
                       top: `${taglineConfig.y}%`,
-                      transform: "translate(-50%, -50%)",
+                      transform: "translateY(-50%)",
                       fontSize: `${taglineConfig.size}px`,
                       color: taglineConfig.color,
                       fontWeight: taglineConfig.fontWeight === "semibold" ? 600 : 400
@@ -477,7 +477,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                       fontWeight: 700,
                       left: `${phoneBadge.x}%`,
                       top: `${phoneBadge.y}%`,
-                      transform: "translate(-50%, -50%)",
+                      transform: "translateY(-50%)",
                       backgroundColor: phoneBadge.bgColor,
                       color: phoneBadge.textColor
                     }}
@@ -502,7 +502,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                       fontWeight: 500,
                       left: `${whatsappBadge.x}%`,
                       top: `${whatsappBadge.y}%`,
-                      transform: "translate(-50%, -50%)",
+                      transform: "translateY(-50%)",
                       backgroundColor: whatsappBadge.bgColor,
                       color: whatsappBadge.textColor
                     }}
