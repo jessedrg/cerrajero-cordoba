@@ -383,12 +383,12 @@ WhatsApp
               {title}
             </h1>
             
-            {/* En desktop: subtitle y badges van aqui debajo del H1 */}
+            {/* En desktop: subtitle (H2) y badges van aqui debajo del H1 */}
             <div className="hidden lg:block space-y-4">
               {subtitle && (
-                <p className={cn("text-base sm:text-lg lg:text-xl leading-relaxed text-pretty", subtitleColor)}>
+                <h2 className={cn("text-xl lg:text-2xl font-normal leading-relaxed text-pretty", subtitleColor)}>
                   {subtitle}
-                </p>
+                </h2>
               )}
               {showButtons && (
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
@@ -447,12 +447,12 @@ WhatsApp
             )}
           </div>
           
-          {/* Bloque 3: Subtitle y badges (solo en mobile, despues de imagen) */}
+          {/* Bloque 3: Subtitle (H2) y badges (solo en mobile, despues de imagen) */}
           <div className="lg:hidden w-full space-y-4">
             {subtitle && (
-              <p className={cn("text-base leading-relaxed text-pretty", subtitleColor)}>
+              <h2 className={cn("text-lg font-normal leading-relaxed text-pretty", subtitleColor)}>
                 {subtitle}
-              </p>
+              </h2>
             )}
             {showButtons && (
             <div className="flex flex-col gap-3 pt-2">
