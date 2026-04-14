@@ -65,7 +65,7 @@ const colorVariants: Record<string, { icon: string; bg: string; hover: string }>
 
 export function ServicesList({ 
   services, 
-  title = "Nuestros Servicios",
+  title = "Cerrajeros",
   className = "",
   colorScheme = "blue",
   layout = "grid",

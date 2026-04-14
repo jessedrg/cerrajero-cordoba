@@ -7,13 +7,13 @@ export const metadata: Metadata = {
 
 export default function PoliticaPrivacidadPage() {
   return (
-    <main className="min-h-screen py-20">
+    <main className="min-h-screen py-20 bg-gradient-to-b from-orange-50/50 to-background">
       <div className="container mx-auto px-4 max-w-4xl">
-        <h1 className="text-4xl font-bold mb-8">Política de Privacidad</h1>
+        <h1 className="text-4xl font-bold mb-8 text-zinc-900">Política de Privacidad</h1>
         
-        <div className="prose prose-gray max-w-none space-y-8">
+        <div className="prose max-w-none space-y-8 bg-white rounded-2xl p-8 shadow-sm border border-orange-100">
           <section>
-            <h2 className="text-2xl font-semibold mb-4">1. Responsable del Tratamiento</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-zinc-800">1. Responsable del Tratamiento</h2>
             <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
               <li><strong>Responsable:</strong> Cerrajero Córdoba 24H</li>
               <li><strong>Teléfono:</strong> 900 433 189</li>
@@ -23,7 +23,7 @@ export default function PoliticaPrivacidadPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">2. Finalidad del Tratamiento</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-zinc-800">2. Finalidad del Tratamiento</h2>
             <p className="text-muted-foreground mb-4">
               Los datos personales que nos facilite serán tratados con las siguientes finalidades:
             </p>
@@ -37,21 +37,21 @@ export default function PoliticaPrivacidadPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">3. Legitimación</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-zinc-800">3. Legitimación</h2>
             <p className="text-muted-foreground">
               La base legal para el tratamiento de sus datos es el consentimiento del interesado, la ejecución de un contrato o la aplicación de medidas precontractuales, y el cumplimiento de obligaciones legales. La oferta prospectiva de productos y servicios está basada en el consentimiento que se le solicita.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">4. Destinatarios</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-zinc-800">4. Destinatarios</h2>
             <p className="text-muted-foreground">
               Sus datos no serán cedidos a terceros, salvo obligación legal o cuando sea necesario para la prestación del servicio (por ejemplo, a los profesionales que realizarán el trabajo en su domicilio). En ningún caso venderemos sus datos a terceros.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">5. Derechos del Interesado</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-zinc-800">5. Derechos del Interesado</h2>
             <p className="text-muted-foreground mb-4">
               Puede ejercer los siguientes derechos:
             </p>
@@ -69,21 +69,21 @@ export default function PoliticaPrivacidadPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">6. Conservación de Datos</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-zinc-800">6. Conservación de Datos</h2>
             <p className="text-muted-foreground">
               Sus datos serán conservados mientras dure la relación comercial y, una vez finalizada, durante los plazos de prescripción legalmente aplicables. Cuando los datos dejen de ser necesarios, serán suprimidos con las medidas de seguridad adecuadas.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">7. Seguridad</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-zinc-800">7. Seguridad</h2>
             <p className="text-muted-foreground">
               Hemos adoptado las medidas técnicas y organizativas necesarias para garantizar la seguridad de sus datos y evitar su alteración, pérdida, tratamiento o acceso no autorizado, habida cuenta del estado de la tecnología, la naturaleza de los datos y los riesgos a los que están expuestos.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">8. Reclamaciones</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-zinc-800">8. Reclamaciones</h2>
             <p className="text-muted-foreground">
               Si considera que el tratamiento de sus datos no se ajusta a la normativa vigente, puede presentar una reclamación ante la Agencia Española de Protección de Datos (www.aepd.es).
             </p>

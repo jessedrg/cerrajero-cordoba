@@ -7,20 +7,20 @@ export const metadata: Metadata = {
 
 export default function PoliticaCookiesPage() {
   return (
-    <main className="min-h-screen py-20">
+    <main className="min-h-screen py-20 bg-gradient-to-b from-orange-50/50 to-background">
       <div className="container mx-auto px-4 max-w-4xl">
-        <h1 className="text-4xl font-bold mb-8">Política de Cookies</h1>
+        <h1 className="text-4xl font-bold mb-8 text-zinc-900">Política de Cookies</h1>
         
-        <div className="prose prose-gray max-w-none space-y-8">
+        <div className="prose max-w-none space-y-8 bg-white rounded-2xl p-8 shadow-sm border border-orange-100">
           <section>
-            <h2 className="text-2xl font-semibold mb-4">1. ¿Qué son las cookies?</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-zinc-800">1. ¿Qué son las cookies?</h2>
             <p className="text-muted-foreground">
               Las cookies son pequeños archivos de texto que los sitios web almacenan en su dispositivo (ordenador, tablet o móvil) cuando los visita. Se utilizan ampliamente para hacer que los sitios web funcionen de manera más eficiente, así como para proporcionar información a los propietarios del sitio.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">2. Tipos de cookies que utilizamos</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-zinc-800">2. Tipos de cookies que utilizamos</h2>
             
             <h3 className="text-xl font-medium mb-3 mt-6">Cookies técnicas (necesarias)</h3>
             <p className="text-muted-foreground mb-4">
@@ -39,7 +39,7 @@ export default function PoliticaCookiesPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">3. Cookies utilizadas en este sitio web</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-zinc-800">3. Cookies utilizadas en este sitio web</h2>
             <div className="overflow-x-auto">
               <table className="w-full border-collapse border border-gray-200 text-sm">
                 <thead>
@@ -75,7 +75,7 @@ export default function PoliticaCookiesPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">4. ¿Cómo gestionar las cookies?</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-zinc-800">4. ¿Cómo gestionar las cookies?</h2>
             <p className="text-muted-foreground mb-4">
               Puede permitir, bloquear o eliminar las cookies instaladas en su equipo mediante la configuración de las opciones del navegador. A continuación le ofrecemos enlaces donde encontrará información sobre cómo gestionar las cookies en los navegadores más comunes:
             </p>
@@ -88,14 +88,14 @@ export default function PoliticaCookiesPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">5. Actualización de la política</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-zinc-800">5. Actualización de la política</h2>
             <p className="text-muted-foreground">
               Esta política de cookies puede ser actualizada periódicamente, por lo que le recomendamos revisarla cada vez que acceda a nuestro sitio web con el objetivo de estar adecuadamente informado sobre cómo y para qué usamos las cookies.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">6. Contacto</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-zinc-800">6. Contacto</h2>
             <p className="text-muted-foreground">
               Si tiene alguna duda sobre esta política de cookies, puede contactar con nosotros a través del teléfono <strong>900 433 189</strong> o enviando un email a <strong>info@cerrajerocordoba.es</strong>.
             </p>
