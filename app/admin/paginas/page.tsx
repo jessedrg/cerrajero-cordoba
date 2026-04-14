@@ -543,7 +543,7 @@ export default function PaginasPage() {
             variant="outline"
             onClick={bulkPublish}
             disabled={bulkPublishing}
-            className="border-orange-200 text-orange-600 hover:bg-orange-50"
+            className="border-green-200 text-green-600 hover:bg-green-50"
           >
             {bulkPublishing ? (
               <>
@@ -553,7 +553,7 @@ export default function PaginasPage() {
             ) : (
               <>
                 <ImageOff className="h-4 w-4 mr-2" />
-                Publicar Sin Imagen
+                Generar Restantes ({pages.filter(p => !p.hero_image_url).length})
               </>
             )}
           </Button>
