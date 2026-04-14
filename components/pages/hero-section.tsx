@@ -41,15 +41,15 @@ interface HeroSectionProps {
   showButtons?: boolean
 }
 
-const colorSchemes: Record<string, { gradient: string; accent: string; button: string }> = {
-  blue: { gradient: "from-blue-600/10 via-blue-500/5 to-background", accent: "text-blue-600", button: "bg-blue-600 hover:bg-blue-700" },
-  green: { gradient: "from-green-600/10 via-green-500/5 to-background", accent: "text-green-600", button: "bg-green-600 hover:bg-green-700" },
-  orange: { gradient: "from-orange-500/10 via-orange-500/5 to-background", accent: "text-orange-500", button: "bg-orange-500 hover:bg-orange-600" },
-  teal: { gradient: "from-teal-600/10 via-teal-500/5 to-background", accent: "text-teal-600", button: "bg-teal-600 hover:bg-teal-700" },
-  indigo: { gradient: "from-indigo-600/10 via-indigo-500/5 to-background", accent: "text-indigo-600", button: "bg-indigo-600 hover:bg-indigo-700" },
-  emerald: { gradient: "from-emerald-600/10 via-emerald-500/5 to-background", accent: "text-emerald-600", button: "bg-emerald-600 hover:bg-emerald-700" },
-  amber: { gradient: "from-amber-600/10 via-amber-500/5 to-background", accent: "text-amber-600", button: "bg-amber-600 hover:bg-amber-700" },
-  cyan: { gradient: "from-cyan-600/10 via-cyan-500/5 to-background", accent: "text-cyan-600", button: "bg-cyan-600 hover:bg-cyan-700" },
+const colorSchemes: Record<string, { gradient: string; accent: string; button: string; bg: string; text: string }> = {
+  blue: { gradient: "from-blue-600/10 via-blue-500/5 to-background", accent: "text-blue-600", button: "bg-blue-600 hover:bg-blue-700", bg: "bg-blue-50", text: "text-blue-900" },
+  green: { gradient: "from-green-600/10 via-green-500/5 to-background", accent: "text-green-600", button: "bg-green-600 hover:bg-green-700", bg: "bg-green-50", text: "text-green-900" },
+  orange: { gradient: "from-orange-500/10 via-orange-500/5 to-background", accent: "text-orange-500", button: "bg-orange-500 hover:bg-orange-600", bg: "bg-orange-50", text: "text-orange-900" },
+  teal: { gradient: "from-teal-600/10 via-teal-500/5 to-background", accent: "text-teal-600", button: "bg-teal-600 hover:bg-teal-700", bg: "bg-teal-50", text: "text-teal-900" },
+  indigo: { gradient: "from-indigo-600/10 via-indigo-500/5 to-background", accent: "text-indigo-600", button: "bg-indigo-600 hover:bg-indigo-700", bg: "bg-indigo-50", text: "text-indigo-900" },
+  emerald: { gradient: "from-emerald-600/10 via-emerald-500/5 to-background", accent: "text-emerald-600", button: "bg-emerald-600 hover:bg-emerald-700", bg: "bg-emerald-50", text: "text-emerald-900" },
+  amber: { gradient: "from-slate-900 via-slate-800 to-slate-900", accent: "text-amber-400", button: "bg-amber-500 hover:bg-amber-400 text-slate-900", bg: "bg-slate-900", text: "text-white" },
+  cyan: { gradient: "from-cyan-600/10 via-cyan-500/5 to-background", accent: "text-cyan-600", button: "bg-cyan-600 hover:bg-cyan-700", bg: "bg-cyan-50", text: "text-cyan-900" },
 }
 
 const spacingVariants: Record<string, string> = {
@@ -357,60 +357,68 @@ WhatsApp
   // Layout: Standard (default)
   // En mobile: H1 -> Imagen -> Texto principal
   // En desktop: grid con texto a la izquierda e imagen a la derecha
+  // Amber theme uses dark background with light text
+  const isDarkTheme = color_scheme === "amber"
+  const textColor = isDarkTheme ? "text-white" : ""
+  const subtitleColor = isDarkTheme ? "text-slate-300" : "text-muted-foreground"
+  const badgeColor = isDarkTheme ? "text-slate-400" : "text-muted-foreground"
+  const highlightBg = isDarkTheme ? "bg-amber-500/20 border border-amber-500/30" : "bg-background"
+  
   return (
-    <section className={cn("relative overflow-hidden bg-gradient-to-b", colors.gradient, heroHeight || spacing)}>
-      <div className="container mx-auto px-4 pt-6 pb-8 lg:pt-8 lg:pb-12">
+    <section className={cn("relative overflow-hidden bg-gradient-to-br", colors.gradient, heroHeight || spacing)}>
+      {isDarkTheme && <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>}
+      <div className="container mx-auto px-4 pt-6 pb-8 lg:pt-8 lg:pb-12 relative">
         {/* Mobile layout: flex column con orden especifico */}
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-12 items-center">
           
           {/* Bloque 1: Highlight + H1 (siempre primero en mobile) */}
           <div className="w-full lg:row-span-2 space-y-4 lg:space-y-6">
             {highlight && (
-              <div className={cn("inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium bg-background", colors.accent)}>
-                <Star className="h-4 w-4 fill-current" />
+              <div className={cn("inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium", highlightBg, colors.accent)}>
+                <Clock className="h-4 w-4" />
                 {highlight}
               </div>
             )}
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-balance">
+            <h1 className={cn("text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-balance", textColor)}>
               {title}
             </h1>
             
             {/* En desktop: subtitle y badges van aqui debajo del H1 */}
             <div className="hidden lg:block space-y-4">
               {subtitle && (
-                <p className="text-base sm:text-lg lg:text-xl text-muted-foreground leading-relaxed text-pretty">
+                <p className={cn("text-base sm:text-lg lg:text-xl leading-relaxed text-pretty", subtitleColor)}>
                   {subtitle}
                 </p>
               )}
               {showButtons && (
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <Button size="lg" asChild className={cn("gap-2 text-white w-full sm:w-auto", colors.button)}>
+                <Button size="lg" asChild className={cn("gap-2 w-full sm:w-auto font-semibold h-14 px-8", colors.button)}>
                   <a href={`tel:+34${phoneNumber}`}>
                     <Phone className="h-5 w-5" />
-                    {buttonText}
+                    {phoneDisplay}
                   </a>
                 </Button>
-                <Button size="lg" asChild className="gap-2 bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto">
+                <Button size="lg" asChild className={cn("gap-2 w-full sm:w-auto h-14 px-8", isDarkTheme ? "bg-transparent border-2 border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-slate-900" : "bg-green-600 hover:bg-green-700 text-white")}>
                   <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noopener noreferrer">
                     <MessageSquare className="h-5 w-5" />
                     WhatsApp
                   </a>
                 </Button>
-                <Button size="lg" variant="outline" asChild className="gap-2 bg-white text-gray-900 hover:bg-gray-100 border-gray-300 shadow-sm w-full sm:w-auto">
-                  <a href={`tel:+34${phoneNumber}`}>
-                    <Phone className="h-4 w-4" />
-                    {phoneDisplay}
-                  </a>
-                </Button>
               </div>
               )}
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2 text-sm text-muted-foreground">
+              <div className={cn("flex flex-wrap items-center gap-x-6 gap-y-2 pt-4 text-sm", badgeColor)}>
                 <span className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-green-500 flex-shrink-0" />
+                  <Clock className={cn("h-5 w-5", colors.accent)} />
                   {badge1}
                 </span>
-                <span>{badge2}</span>
-                <span>{badge3}</span>
+                <span className="flex items-center gap-2">
+                  <Shield className={cn("h-5 w-5", colors.accent)} />
+                  {badge2}
+                </span>
+                <span className="flex items-center gap-2">
+                  <Star className={cn("h-5 w-5", colors.accent)} />
+                  {badge3}
+                </span>
               </div>
             </div>
           </div>
@@ -418,22 +426,22 @@ WhatsApp
           {/* Bloque 2: Imagen (segundo en mobile, derecha en desktop) */}
           <div className="flex items-center justify-center w-full">
             {imageUrl ? (
-              <div className="relative rounded-2xl overflow-hidden shadow-xl">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                 <Image
                   src={imageUrl}
                   alt={altText}
-                  width={400}
+                  width={500}
                   height={400}
-                  className="w-auto h-auto max-w-full max-h-[280px] lg:max-h-[420px] object-contain"
-                  sizes="(max-width: 768px) 100vw, 400px"
+                  className="w-auto h-auto max-w-full max-h-[300px] lg:max-h-[450px] object-contain"
+                  sizes="(max-width: 768px) 100vw, 500px"
                   priority
                 />
               </div>
             ) : (
-              <div className={cn("w-full aspect-[4/3] rounded-2xl bg-gradient-to-br", colors.gradient, "flex items-center justify-center")}>
+              <div className={cn("w-full aspect-[4/3] rounded-2xl flex items-center justify-center", isDarkTheme ? "bg-slate-800/50" : "bg-gradient-to-br " + colors.gradient)}>
                 <div className="text-center">
                   <span className={cn("text-6xl lg:text-8xl font-bold", colors.accent)}>{serviceName.charAt(0)}</span>
-                  <p className="text-lg lg:text-xl text-muted-foreground mt-4">{cityName}</p>
+                  <p className={cn("text-lg lg:text-xl mt-4", subtitleColor)}>{cityName}</p>
                 </div>
               </div>
             )}
@@ -442,39 +450,39 @@ WhatsApp
           {/* Bloque 3: Subtitle y badges (solo en mobile, despues de imagen) */}
           <div className="lg:hidden w-full space-y-4">
             {subtitle && (
-              <p className="text-base text-muted-foreground leading-relaxed text-pretty">
+              <p className={cn("text-base leading-relaxed text-pretty", subtitleColor)}>
                 {subtitle}
               </p>
             )}
             {showButtons && (
             <div className="flex flex-col gap-3 pt-2">
-              <Button size="lg" asChild className={cn("gap-2 text-white w-full", colors.button)}>
+              <Button size="lg" asChild className={cn("gap-2 w-full font-semibold h-14", colors.button)}>
                 <a href={`tel:+34${phoneNumber}`}>
                   <Phone className="h-5 w-5" />
-                  {buttonText}
+                  {phoneDisplay}
                 </a>
               </Button>
-              <Button size="lg" asChild className="gap-2 bg-green-600 hover:bg-green-700 text-white w-full">
+              <Button size="lg" asChild className={cn("gap-2 w-full h-14", isDarkTheme ? "bg-transparent border-2 border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-slate-900" : "bg-green-600 hover:bg-green-700 text-white")}>
                 <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noopener noreferrer">
                   <MessageSquare className="h-5 w-5" />
                   WhatsApp
                 </a>
               </Button>
-              <Button size="lg" variant="outline" asChild className="gap-2 bg-white text-gray-900 hover:bg-gray-100 border-gray-300 shadow-sm w-full">
-                <a href={`tel:+34${phoneNumber}`}>
-                  <Phone className="h-4 w-4" />
-                  {phoneDisplay}
-                </a>
-              </Button>
             </div>
             )}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2 text-sm text-muted-foreground">
+            <div className={cn("flex flex-wrap items-center gap-x-6 gap-y-2 pt-4 text-sm", badgeColor)}>
               <span className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-green-500 flex-shrink-0" />
+                <Clock className={cn("h-5 w-5", colors.accent)} />
                 {badge1}
               </span>
-              <span>{badge2}</span>
-              <span>{badge3}</span>
+              <span className="flex items-center gap-2">
+                <Shield className={cn("h-5 w-5", colors.accent)} />
+                {badge2}
+              </span>
+              <span className="flex items-center gap-2">
+                <Star className={cn("h-5 w-5", colors.accent)} />
+                {badge3}
+              </span>
             </div>
           </div>
         </div>

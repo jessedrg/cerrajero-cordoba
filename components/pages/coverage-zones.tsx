@@ -24,7 +24,7 @@ const colorVariants: Record<string, { icon: string; bg: string; highlight: strin
   teal: { icon: "text-teal-600", bg: "bg-teal-50", highlight: "bg-teal-100 text-teal-700" },
   indigo: { icon: "text-indigo-600", bg: "bg-indigo-50", highlight: "bg-indigo-100 text-indigo-700" },
   emerald: { icon: "text-emerald-600", bg: "bg-emerald-50", highlight: "bg-emerald-100 text-emerald-700" },
-  amber: { icon: "text-amber-600", bg: "bg-amber-50", highlight: "bg-amber-100 text-amber-700" },
+  amber: { icon: "text-amber-500", bg: "bg-slate-100", highlight: "bg-amber-100 text-amber-700" },
   cyan: { icon: "text-cyan-600", bg: "bg-cyan-50", highlight: "bg-cyan-100 text-cyan-700" },
 }
 

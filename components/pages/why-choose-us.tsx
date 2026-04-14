@@ -23,15 +23,15 @@ const iconMap: Record<string, React.ElementType> = {
   heart: Heart,
 }
 
-const colorVariants: Record<string, { icon: string; bg: string }> = {
-  blue: { icon: "text-blue-600", bg: "bg-blue-100" },
-  green: { icon: "text-green-600", bg: "bg-green-100" },
-  orange: { icon: "text-orange-600", bg: "bg-orange-100" },
-  teal: { icon: "text-teal-600", bg: "bg-teal-100" },
-  indigo: { icon: "text-indigo-600", bg: "bg-indigo-100" },
-  emerald: { icon: "text-emerald-600", bg: "bg-emerald-100" },
-  amber: { icon: "text-amber-600", bg: "bg-amber-100" },
-  cyan: { icon: "text-cyan-600", bg: "bg-cyan-100" },
+const colorVariants: Record<string, { icon: string; bg: string; gradient: string }> = {
+  blue: { icon: "text-blue-600", bg: "bg-blue-100", gradient: "from-blue-400 to-blue-500" },
+  green: { icon: "text-green-600", bg: "bg-green-100", gradient: "from-green-400 to-green-500" },
+  orange: { icon: "text-orange-600", bg: "bg-orange-100", gradient: "from-orange-400 to-orange-500" },
+  teal: { icon: "text-teal-600", bg: "bg-teal-100", gradient: "from-teal-400 to-teal-500" },
+  indigo: { icon: "text-indigo-600", bg: "bg-indigo-100", gradient: "from-indigo-400 to-indigo-500" },
+  emerald: { icon: "text-emerald-600", bg: "bg-emerald-100", gradient: "from-emerald-400 to-emerald-500" },
+  amber: { icon: "text-slate-900", bg: "bg-gradient-to-br from-amber-400 to-amber-500", gradient: "from-amber-400 to-amber-500" },
+  cyan: { icon: "text-cyan-600", bg: "bg-cyan-100", gradient: "from-cyan-400 to-cyan-500" },
 }
 
 export function WhyChooseUs({ reasons, serviceName, cityName, colorScheme = "blue" }: WhyChooseUsProps) {
@@ -48,19 +48,19 @@ export function WhyChooseUs({ reasons, serviceName, cityName, colorScheme = "blu
         </p>
       </div>
       
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-        {reasons.map((reason, index) => {
+      <div className="grid md:grid-cols-3 gap-10 max-w-5xl mx-auto">
+        {reasons.slice(0, 3).map((reason, index) => {
           const IconComponent = iconMap[reason.icon?.toLowerCase() || "check"] || CheckCircle
           return (
             <div 
               key={index}
-              className="bg-background rounded-xl p-6 shadow-sm border hover:shadow-md transition-shadow"
+              className="text-center space-y-4"
             >
-              <div className={cn("inline-flex p-3 rounded-lg mb-4", colors.bg)}>
-                <IconComponent className={cn("h-6 w-6", colors.icon)} />
+              <div className={cn("mx-auto w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg", colors.bg)}>
+                <IconComponent className={cn("h-10 w-10", colors.icon)} />
               </div>
-              <h3 className="font-semibold text-lg mb-2">{reason.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
+              <h3 className="text-xl font-semibold text-slate-900">{reason.title}</h3>
+              <p className="text-slate-600">
                 {reason.description}
               </p>
             </div>

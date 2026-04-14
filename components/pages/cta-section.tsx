@@ -29,15 +29,15 @@ interface CTASectionProps {
   badges?: string[]
 }
 
-const colorVariants: Record<string, { bg: string; button: string; text: string }> = {
-  blue: { bg: "bg-blue-600", button: "bg-white text-blue-600 hover:bg-blue-50", text: "text-blue-100" },
-  green: { bg: "bg-green-600", button: "bg-white text-green-600 hover:bg-green-50", text: "text-green-100" },
-  orange: { bg: "bg-orange-600", button: "bg-white text-orange-600 hover:bg-orange-50", text: "text-orange-100" },
-  teal: { bg: "bg-teal-600", button: "bg-white text-teal-600 hover:bg-teal-50", text: "text-teal-100" },
-  indigo: { bg: "bg-indigo-600", button: "bg-white text-indigo-600 hover:bg-indigo-50", text: "text-indigo-100" },
-  emerald: { bg: "bg-emerald-600", button: "bg-white text-emerald-600 hover:bg-emerald-50", text: "text-emerald-100" },
-  amber: { bg: "bg-amber-600", button: "bg-white text-amber-600 hover:bg-amber-50", text: "text-amber-100" },
-  cyan: { bg: "bg-cyan-600", button: "bg-white text-cyan-600 hover:bg-cyan-50", text: "text-cyan-100" },
+const colorVariants: Record<string, { bg: string; button: string; buttonSecondary: string; text: string; accent: string }> = {
+  blue: { bg: "bg-blue-600", button: "bg-white text-blue-600 hover:bg-blue-50", buttonSecondary: "border-white text-white hover:bg-white/10", text: "text-blue-100", accent: "text-blue-400" },
+  green: { bg: "bg-green-600", button: "bg-white text-green-600 hover:bg-green-50", buttonSecondary: "border-white text-white hover:bg-white/10", text: "text-green-100", accent: "text-green-400" },
+  orange: { bg: "bg-orange-600", button: "bg-white text-orange-600 hover:bg-orange-50", buttonSecondary: "border-white text-white hover:bg-white/10", text: "text-orange-100", accent: "text-orange-400" },
+  teal: { bg: "bg-teal-600", button: "bg-white text-teal-600 hover:bg-teal-50", buttonSecondary: "border-white text-white hover:bg-white/10", text: "text-teal-100", accent: "text-teal-400" },
+  indigo: { bg: "bg-indigo-600", button: "bg-white text-indigo-600 hover:bg-indigo-50", buttonSecondary: "border-white text-white hover:bg-white/10", text: "text-indigo-100", accent: "text-indigo-400" },
+  emerald: { bg: "bg-emerald-600", button: "bg-white text-emerald-600 hover:bg-emerald-50", buttonSecondary: "border-white text-white hover:bg-white/10", text: "text-emerald-100", accent: "text-emerald-400" },
+  amber: { bg: "bg-slate-900", button: "bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold", buttonSecondary: "border-2 border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-slate-900", text: "text-slate-300", accent: "text-amber-400" },
+  cyan: { bg: "bg-cyan-600", button: "bg-white text-cyan-600 hover:bg-cyan-50", buttonSecondary: "border-white text-white hover:bg-white/10", text: "text-cyan-100", accent: "text-cyan-400" },
 }
 
 export function CTASection({
@@ -150,36 +150,46 @@ export function CTASection({
   }
 
   // Style: Button Primary (default)
+  const isAmber = colorScheme === "amber"
+  
   return (
     <div className={cn("max-w-4xl mx-auto", className)}>
-      <div className={cn("rounded-2xl p-8 lg:p-12 text-white", colors.bg)}>
-        <div className="text-center space-y-6">
+      <div className={cn("rounded-2xl p-8 lg:p-12 text-white relative overflow-hidden", colors.bg)}>
+        {isAmber && <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>}
+        <div className="text-center space-y-6 relative">
           <h2 className="text-3xl lg:text-4xl font-bold text-balance">
             {title || `¿Necesitas un ${serviceName} en ${cityName}?`}
           </h2>
-          <p className="text-lg opacity-90 text-pretty max-w-2xl mx-auto">
+          <p className={cn("text-lg text-pretty max-w-2xl mx-auto", colors.text)}>
             {description || `Contacta con nosotros para obtener un presupuesto sin compromiso. Servicio profesional y garantizado en toda la zona de ${cityName}.`}
           </p>
           
           {priceFrom && (
             <div className="py-2">
-              <span className="text-sm opacity-80">Desde</span>
-              <span className="text-4xl font-bold ml-2">{priceFrom}€</span>
+              <span className={cn("text-sm", colors.text)}>Desde</span>
+              <span className={cn("text-5xl font-bold ml-2", isAmber ? "text-amber-400" : "")}>{priceFrom}€</span>
             </div>
           )}
           
+          <p className={cn("text-5xl font-bold", colors.accent)}>{PHONE_DISPLAY}</p>
+          
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Button size="lg" className={cn("gap-2 text-base", colors.button)}>
-              <Phone className="h-5 w-5" />
-              Llamar Ahora
+            <Button size="lg" asChild className={cn("gap-2 text-lg h-14 px-8", colors.button)}>
+              <a href={`tel:+34${PHONE_NUMBER}`}>
+                <Phone className="h-5 w-5" />
+                Llamar Ahora
+              </a>
             </Button>
             <Button 
               size="lg" 
               variant="outline"
-              className="gap-2 text-base bg-white text-gray-900 border-white hover:bg-gray-100 shadow-md"
+              asChild
+              className={cn("gap-2 text-lg h-14 px-8", colors.buttonSecondary)}
             >
-              <MessageSquare className="h-5 w-5" />
-              {ctaText}
+              <a href="https://wa.me/34711267223" target="_blank" rel="noopener noreferrer">
+                <MessageSquare className="h-5 w-5" />
+                WhatsApp
+              </a>
             </Button>
           </div>
           
@@ -187,30 +197,30 @@ export function CTASection({
           {badges && badges.length > 0 ? (
             <div className="flex flex-wrap justify-center gap-4 pt-6">
               {badges.map((badge, idx) => (
-                <span key={idx} className="flex items-center gap-2 bg-white/20 px-3 py-1 rounded-full text-sm">
+                <span key={idx} className={cn("flex items-center gap-2 px-3 py-1 rounded-full text-sm", isAmber ? "bg-amber-500/20" : "bg-white/20")}>
                   {badge}
                 </span>
               ))}
             </div>
           ) : (
-            <div className="flex flex-wrap justify-center gap-6 pt-6 text-sm opacity-80">
+            <div className={cn("flex flex-wrap justify-center gap-6 pt-6 text-sm", colors.text)}>
               <span className="flex items-center gap-2">
-                <Clock className="h-4 w-4" />
+                <Clock className={cn("h-5 w-5", colors.accent)} />
                 {LABELS.response}
               </span>
               <span className="flex items-center gap-2">
-                <Shield className="h-4 w-4" />
+                <Shield className={cn("h-5 w-5", colors.accent)} />
                 {LABELS.guaranteed}
               </span>
               <span className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4" />
+                <CheckCircle className={cn("h-5 w-5", colors.accent)} />
                 {LABELS.noCommitment}
               </span>
             </div>
           )}
           
           {urgencyText && (
-            <p className="text-sm font-medium animate-pulse">{urgencyText}</p>
+            <p className={cn("text-sm font-medium", colors.accent)}>{urgencyText}</p>
           )}
         </div>
       </div>
