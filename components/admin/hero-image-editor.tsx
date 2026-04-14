@@ -281,36 +281,43 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
         scale: 2,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: "#ffffff"
+        backgroundColor: "#ffffff",
+        logging: false,
+        imageTimeout: 15000,
+        removeContainer: true
       })
       
-      // Convert canvas to blob
+      // Convert canvas to blob - use JPEG for better compatibility with sharp
       const blob = await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob((blob) => {
           if (blob) resolve(blob)
           else reject(new Error("Failed to create blob"))
-        }, "image/png", 0.95)
+        }, "image/jpeg", 0.92)
       })
       
-      // Convert blob to File (same as manual upload)
-      const filename = `hero-${serviceName.toLowerCase().replace(/\s+/g, '-')}-${cityName.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.png`
-      const file = new File([blob], filename, { type: "image/png" })
+      // Convert blob to File
+      const safeCityName = cityName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+      const safeServiceName = serviceName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+      const filename = `hero-${safeServiceName}-${safeCityName}-${Date.now()}.jpg`
+      const file = new File([blob], filename, { type: "image/jpeg" })
       
-      // Create FormData and upload (same pattern as ImageUploader)
+      // Create FormData and upload
       const formData = new FormData()
       formData.append("file", file)
       formData.append("folder", "pages")
       
       const response = await fetch("/api/admin/upload", {
         method: "POST",
-        body: formData
+        body: formData,
+        credentials: "include"
       })
       
-      if (!response.ok) {
-        throw new Error("Upload failed")
-      }
-      
       const data = await response.json()
+      
+      if (!response.ok) {
+        console.error("[v0] Upload error response:", data)
+        throw new Error(data.error || "Upload failed")
+      }
       
       // Update the form with the new URL
       onChange(data.url)
@@ -318,8 +325,8 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
       // Collapse the editor
       setExpanded(false)
     } catch (error) {
-      console.error("Error uploading image:", error)
-      alert("Error al subir la imagen. Inténtalo de nuevo.")
+      console.error("[v0] Error uploading image:", error)
+      alert(`Error al subir la imagen: ${error instanceof Error ? error.message : "Error desconocido"}`)
     } finally {
       setUploading(false)
     }
