@@ -90,8 +90,22 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("Upload error:", error)
+    
+    // Provide more specific error messages
+    let errorMessage = "Error al subir el archivo"
+    if (error instanceof Error) {
+      if (error.message.includes("sharp")) {
+        errorMessage = "Error al procesar la imagen"
+      } else if (error.message.includes("blob") || error.message.includes("Blob")) {
+        errorMessage = "Error de almacenamiento"
+      } else if (error.message.includes("timeout")) {
+        errorMessage = "Tiempo de espera agotado"
+      }
+      console.error("Error details:", error.message)
+    }
+    
     return NextResponse.json(
-      { error: "Error al subir el archivo" },
+      { error: errorMessage },
       { status: 500 }
     )
   }

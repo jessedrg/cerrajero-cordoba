@@ -138,7 +138,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
   })
   
   const [whatsappBadge, setWhatsappBadge] = useState<BadgeConfig>({
-    text: "WhatsApp",
+    text: "cerrajerocordoba.es",
     x: 25,
     y: 70,
     bgColor: "#22c55e",
@@ -240,25 +240,30 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     setTimeout(() => setGenerating(false), 300)
   }, [serviceName, cityName])
 
-  // Export as image using html2canvas
+  // Export as image using dom-to-image-more
   const exportImage = async () => {
     if (!canvasRef.current) return
     
     try {
-      const html2canvas = (await import("html2canvas")).default
-      const canvas = await html2canvas(canvasRef.current, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#ffffff"
+      const domtoimage = await import("dom-to-image-more")
+      const dataUrl = await domtoimage.toPng(canvasRef.current, {
+        quality: 1,
+        bgcolor: "#ffffff",
+        width: canvasRef.current.offsetWidth * 2,
+        height: canvasRef.current.offsetHeight * 2,
+        style: {
+          transform: "scale(2)",
+          transformOrigin: "top left"
+        }
       })
       
       const link = document.createElement("a")
       link.download = `hero-${Date.now()}.png`
-      link.href = canvas.toDataURL("image/png")
+      link.href = dataUrl
       link.click()
     } catch (error) {
       console.error("Error exporting image:", error)
+      alert("Error al exportar la imagen. Inténtalo de nuevo.")
     }
   }
 
@@ -276,41 +281,43 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     
     setUploading(true)
     try {
-      const html2canvas = (await import("html2canvas")).default
-      const canvas = await html2canvas(canvasRef.current, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#ffffff"
+      const domtoimage = await import("dom-to-image-more")
+      
+      // Use dom-to-image-more which handles modern CSS better
+      const blob = await domtoimage.toBlob(canvasRef.current, {
+        quality: 0.95,
+        bgcolor: "#ffffff",
+        width: canvasRef.current.offsetWidth * 2,
+        height: canvasRef.current.offsetHeight * 2,
+        style: {
+          transform: "scale(2)",
+          transformOrigin: "top left"
+        }
       })
       
-      // Convert canvas to blob
-      const blob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob((blob) => {
-          if (blob) resolve(blob)
-          else reject(new Error("Failed to create blob"))
-        }, "image/png", 0.95)
-      })
+      // Convert blob to File
+      const safeCityName = cityName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+      const safeServiceName = serviceName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+      const filename = `hero-${safeServiceName}-${safeCityName}-${Date.now()}.jpg`
+      const file = new File([blob], filename, { type: "image/jpeg" })
       
-      // Convert blob to File (same as manual upload)
-      const filename = `hero-${serviceName.toLowerCase().replace(/\s+/g, '-')}-${cityName.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.png`
-      const file = new File([blob], filename, { type: "image/png" })
-      
-      // Create FormData and upload (same pattern as ImageUploader)
+      // Create FormData and upload
       const formData = new FormData()
       formData.append("file", file)
       formData.append("folder", "pages")
       
       const response = await fetch("/api/admin/upload", {
         method: "POST",
-        body: formData
+        body: formData,
+        credentials: "include"
       })
       
-      if (!response.ok) {
-        throw new Error("Upload failed")
-      }
-      
       const data = await response.json()
+      
+      if (!response.ok) {
+        console.error("[v0] Upload error response:", data)
+        throw new Error(data.error || "Upload failed")
+      }
       
       // Update the form with the new URL
       onChange(data.url)
@@ -318,8 +325,8 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
       // Collapse the editor
       setExpanded(false)
     } catch (error) {
-      console.error("Error uploading image:", error)
-      alert("Error al subir la imagen. Inténtalo de nuevo.")
+      console.error("[v0] Error uploading image:", error)
+      alert(`Error al subir la imagen: ${error instanceof Error ? error.message : "Error desconocido"}`)
     } finally {
       setUploading(false)
     }
@@ -395,9 +402,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                   width: "100%",
                   aspectRatio: "1200/630",
                   backgroundColor: "#ffffff",
-                  borderRadius: "8px",
-                  overflow: "hidden",
-                  border: "1px solid #e5e7eb"
+                  overflow: "hidden"
                 }}
               >
                 {/* Background Image */}
@@ -495,12 +500,9 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                   <div
                     style={{
                       position: "absolute",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      padding: "8px 16px",
-                      borderRadius: "8px",
+                      padding: "10px 20px",
                       fontWeight: 700,
+                      fontSize: "18px",
                       left: `${phoneBadge.x}%`,
                       top: `${phoneBadge.y}%`,
                       transform: "translateY(-50%)",
@@ -508,9 +510,6 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                       color: phoneBadge.textColor
                     }}
                   >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                    </svg>
                     {phoneBadge.text}
                   </div>
                 )}
@@ -520,12 +519,9 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                   <div
                     style={{
                       position: "absolute",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      padding: "8px 16px",
-                      borderRadius: "8px",
-                      fontWeight: 500,
+                      padding: "10px 20px",
+                      fontWeight: 600,
+                      fontSize: "18px",
                       left: `${whatsappBadge.x}%`,
                       top: `${whatsappBadge.y}%`,
                       transform: "translateY(-50%)",
@@ -533,9 +529,6 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                       color: whatsappBadge.textColor
                     }}
                   >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                    </svg>
                     {whatsappBadge.text}
                   </div>
                 )}
