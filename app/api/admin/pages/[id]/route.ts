@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { revalidatePath } from "next/cache"
 import { verifyAdminSession } from "@/lib/admin/auth"
 import { createClient } from "@/lib/supabase/server"
 
@@ -86,6 +87,14 @@ async function handleUpdate(
         { error: "Error al actualizar la página" },
         { status: 500 }
       )
+    }
+
+    // Revalidate sitemap and the page itself when status changes to published
+    if (body.status === "published" || body.published_at) {
+      revalidatePath("/sitemap.xml")
+      if (page.slug) {
+        revalidatePath(`/${page.slug}`)
+      }
     }
 
     return NextResponse.json({ success: true, page })
