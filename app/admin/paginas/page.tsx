@@ -355,11 +355,15 @@ export default function PaginasPage() {
         
         const uploadData = await uploadRes.json()
         
-        // Update page with the image URL
+        // Update page with the image URL AND publish it
         const updateRes = await fetch(`/api/admin/pages/${page.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ hero_image_url: uploadData.url })
+          body: JSON.stringify({ 
+            hero_image_url: uploadData.url,
+            status: "published",
+            published_at: new Date().toISOString()
+          })
         })
         
         if (updateRes.ok) {
