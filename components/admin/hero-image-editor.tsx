@@ -330,22 +330,28 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
       return lines
     }
     
+    // SEQUENTIAL LAYOUT - each element positioned below the previous
+    // Start position and track current Y
+    let currentY = 80 // Start 80px from top
+    const leftMargin = xPx(5) // 5% margin from left
+    const maxTextWidth = WIDTH * 0.50 // Max 50% width for text
+    const verticalGap = 20 // Gap between elements
+    
     // Draw title - with text wrapping if needed
     if (titleConfig.visible) {
       const fontSize = titleConfig.size * scaleFactor
       ctx.fillStyle = titleConfig.color
       ctx.font = `${titleConfig.fontWeight === "bold" ? "bold" : "normal"} ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
-      ctx.textBaseline = "middle"
+      ctx.textBaseline = "top"
       
-      // Max width is 55% of canvas to leave room for image on right
-      const maxWidth = WIDTH * 0.55
-      const lines = wrapText(titleConfig.text, maxWidth, fontSize)
-      const lineHeight = fontSize * 1.2
-      const startY = yPx(titleConfig.y) - ((lines.length - 1) * lineHeight) / 2
+      const lines = wrapText(titleConfig.text, maxTextWidth, fontSize)
+      const lineHeight = fontSize * 1.15
       
       lines.forEach((line, i) => {
-        ctx.fillText(line, xPx(titleConfig.x), startY + i * lineHeight)
+        ctx.fillText(line, leftMargin, currentY + i * lineHeight)
       })
+      
+      currentY += lines.length * lineHeight + verticalGap
     }
     
     // Draw subtitle
@@ -353,8 +359,9 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
       const fontSize = subtitleConfig.size * scaleFactor
       ctx.fillStyle = subtitleConfig.color
       ctx.font = `${subtitleConfig.fontWeight === "bold" ? "bold" : "normal"} ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
-      ctx.textBaseline = "middle"
-      ctx.fillText(subtitleConfig.text, xPx(subtitleConfig.x), yPx(subtitleConfig.y))
+      ctx.textBaseline = "top"
+      ctx.fillText(subtitleConfig.text, leftMargin, currentY)
+      currentY += fontSize + verticalGap
     }
     
     // Draw tagline
@@ -362,21 +369,24 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
       const fontSize = taglineConfig.size * scaleFactor
       ctx.fillStyle = taglineConfig.color
       ctx.font = `${taglineConfig.fontWeight === "semibold" ? "600" : "normal"} ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
-      ctx.textBaseline = "middle"
-      ctx.fillText(taglineConfig.text, xPx(taglineConfig.x), yPx(taglineConfig.y))
+      ctx.textBaseline = "top"
+      ctx.fillText(taglineConfig.text, leftMargin, currentY)
+      currentY += fontSize + verticalGap
     }
     
-    // Calculate badge positions - SAME Y coordinate to avoid overlap
-    const badgeY = yPx(phoneBadge.y)
+    // Add extra gap before badges
+    currentY += 10
+    
+    // Calculate badge positions - on same row, below all text
+    const badgeY = currentY
     const badgeFontSize = 18 * scaleFactor
     const badgePaddingX = 16 * scaleFactor
     const badgePaddingY = 8 * scaleFactor
     const badgeGap = 12 * scaleFactor
     
     // Draw phone badge first to get its width
-    let phoneBadgeEndX = xPx(phoneBadge.x)
+    let phoneBadgeEndX = leftMargin
     if (phoneBadge.visible) {
-      const badgeX = xPx(phoneBadge.x)
       ctx.font = `bold ${badgeFontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
       const textWidth = ctx.measureText(phoneBadge.text).width
       const boxWidth = textWidth + badgePaddingX * 2
@@ -384,19 +394,19 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
       
       // Draw background rectangle
       ctx.fillStyle = phoneBadge.bgColor
-      ctx.fillRect(badgeX, badgeY - boxHeight/2, boxWidth, boxHeight)
+      ctx.fillRect(leftMargin, badgeY, boxWidth, boxHeight)
       
       // Draw text
       ctx.fillStyle = phoneBadge.textColor
-      ctx.textBaseline = "middle"
-      ctx.fillText(phoneBadge.text, badgeX + badgePaddingX, badgeY)
+      ctx.textBaseline = "top"
+      ctx.fillText(phoneBadge.text, leftMargin + badgePaddingX, badgeY + badgePaddingY)
       
-      phoneBadgeEndX = badgeX + boxWidth
+      phoneBadgeEndX = leftMargin + boxWidth
     }
     
     // Draw whatsapp badge - positioned right after phone badge
     if (whatsappBadge.visible) {
-      const badgeX = phoneBadge.visible ? phoneBadgeEndX + badgeGap : xPx(whatsappBadge.x)
+      const badgeX = phoneBadge.visible ? phoneBadgeEndX + badgeGap : leftMargin
       ctx.font = `600 ${badgeFontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
       const textWidth = ctx.measureText(whatsappBadge.text).width
       const boxWidth = textWidth + badgePaddingX * 2
@@ -404,12 +414,12 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
       
       // Draw background rectangle
       ctx.fillStyle = whatsappBadge.bgColor
-      ctx.fillRect(badgeX, badgeY - boxHeight/2, boxWidth, boxHeight)
+      ctx.fillRect(badgeX, badgeY, boxWidth, boxHeight)
       
       // Draw text
       ctx.fillStyle = whatsappBadge.textColor
-      ctx.textBaseline = "middle"
-      ctx.fillText(whatsappBadge.text, badgeX + badgePaddingX, badgeY)
+      ctx.textBaseline = "top"
+      ctx.fillText(whatsappBadge.text, badgeX + badgePaddingX, badgeY + badgePaddingY)
     }
     
     // Convert to blob (high quality JPEG)
