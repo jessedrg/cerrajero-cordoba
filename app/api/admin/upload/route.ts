@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
       filename = `${folder}/${timestamp}-${randomStr}.${extension}`
     }
 
-    // Upload to Vercel Blob
+    // Upload to Vercel Blob (public store)
     const blob = await put(filename, finalBuffer, {
       access: "public",
       contentType: optimize ? "image/webp" : file.type,
