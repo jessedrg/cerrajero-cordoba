@@ -571,7 +571,10 @@ export default function PaginasPage() {
       const cityName = page.cities?.name || "Ciudad"
       const serviceName = page.services?.name || "Cerrajero"
       
+      // Generate SEO title for Google meta
       const newTitle = generateSEOTitle(serviceName, cityName)
+      // Generate visual H1 - simpler format for the page heading
+      const newH1 = generateSEOTitle(serviceName, cityName)
       
       setBulkProgress({ 
         current: i + 1, 
@@ -583,7 +586,10 @@ export default function PaginasPage() {
         const updateRes = await fetch(`/api/admin/pages/${page.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title: newTitle })
+          body: JSON.stringify({ 
+            title: newTitle,
+            h1: newH1
+          })
         })
         
         if (updateRes.ok) {
