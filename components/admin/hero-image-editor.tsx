@@ -240,60 +240,143 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     setTimeout(() => setGenerating(false), 300)
   }, [serviceName, cityName])
 
-  // Export as image using dom-to-image-more
-  const exportImage = async () => {
-    if (!canvasRef.current) return
+  // Generate image using native Canvas API - EXACT rendering guaranteed
+  const generateCanvasImage = useCallback(async (): Promise<Blob> => {
+    const WIDTH = 1200
+    const HEIGHT = 630
     
-    try {
-      const domtoimage = await import("dom-to-image-more")
-      const dataUrl = await domtoimage.toPng(canvasRef.current, {
-        quality: 1,
-        bgcolor: "#ffffff",
-        width: canvasRef.current.offsetWidth * 2,
-        height: canvasRef.current.offsetHeight * 2,
-        style: {
-          transform: "scale(2)",
-          transformOrigin: "top left"
-        }
-      })
+    // Create canvas
+    const canvas = document.createElement("canvas")
+    canvas.width = WIDTH
+    canvas.height = HEIGHT
+    const ctx = canvas.getContext("2d")!
+    
+    // Fill white background
+    ctx.fillStyle = "#ffffff"
+    ctx.fillRect(0, 0, WIDTH, HEIGHT)
+    
+    // Load and draw background image
+    const img = new Image()
+    img.crossOrigin = "anonymous"
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve()
+      img.onerror = reject
+      img.src = selectedImage
+    })
+    ctx.drawImage(img, 0, 0, WIDTH, HEIGHT)
+    
+    // Draw gradient overlay (left to right, white to transparent)
+    const gradient = ctx.createLinearGradient(0, 0, WIDTH * 0.7, 0)
+    gradient.addColorStop(0, "rgba(255,255,255,0.95)")
+    gradient.addColorStop(0.5, "rgba(255,255,255,0.75)")
+    gradient.addColorStop(1, "rgba(255,255,255,0)")
+    ctx.fillStyle = gradient
+    ctx.fillRect(0, 0, WIDTH, HEIGHT)
+    
+    // Draw stripe
+    if (showStripe) {
+      ctx.fillStyle = stripeColor
+      ctx.fillRect(0, 0, 8, HEIGHT)
+    }
+    
+    // Helper to convert percentage to pixels
+    const xPx = (pct: number) => (pct / 100) * WIDTH
+    const yPx = (pct: number) => (pct / 100) * HEIGHT
+    
+    // Draw title
+    if (titleConfig.visible) {
+      ctx.fillStyle = titleConfig.color
+      ctx.font = `${titleConfig.fontWeight === "bold" ? "bold" : "normal"} ${titleConfig.size}px system-ui, -apple-system, sans-serif`
+      ctx.textBaseline = "middle"
+      ctx.fillText(titleConfig.text, xPx(titleConfig.x), yPx(titleConfig.y))
+    }
+    
+    // Draw subtitle
+    if (subtitleConfig.visible) {
+      ctx.fillStyle = subtitleConfig.color
+      ctx.font = `${subtitleConfig.fontWeight === "bold" ? "bold" : "normal"} ${subtitleConfig.size}px system-ui, -apple-system, sans-serif`
+      ctx.textBaseline = "middle"
+      ctx.fillText(subtitleConfig.text, xPx(subtitleConfig.x), yPx(subtitleConfig.y))
+    }
+    
+    // Draw tagline
+    if (taglineConfig.visible) {
+      ctx.fillStyle = taglineConfig.color
+      ctx.font = `${taglineConfig.fontWeight === "semibold" ? "600" : "normal"} ${taglineConfig.size}px system-ui, -apple-system, sans-serif`
+      ctx.textBaseline = "middle"
+      ctx.fillText(taglineConfig.text, xPx(taglineConfig.x), yPx(taglineConfig.y))
+    }
+    
+    // Draw phone badge (rectangle with text)
+    if (phoneBadge.visible) {
+      const badgeX = xPx(phoneBadge.x)
+      const badgeY = yPx(phoneBadge.y)
+      const padding = 12
+      const fontSize = 18
       
+      ctx.font = `bold ${fontSize}px system-ui, -apple-system, sans-serif`
+      const textWidth = ctx.measureText(phoneBadge.text).width
+      
+      // Draw background
+      ctx.fillStyle = phoneBadge.bgColor
+      ctx.fillRect(badgeX, badgeY - fontSize/2 - padding, textWidth + padding*2, fontSize + padding*2)
+      
+      // Draw text
+      ctx.fillStyle = phoneBadge.textColor
+      ctx.textBaseline = "middle"
+      ctx.fillText(phoneBadge.text, badgeX + padding, badgeY)
+    }
+    
+    // Draw whatsapp badge (rectangle with text)
+    if (whatsappBadge.visible) {
+      const badgeX = xPx(whatsappBadge.x)
+      const badgeY = yPx(whatsappBadge.y)
+      const padding = 12
+      const fontSize = 18
+      
+      ctx.font = `600 ${fontSize}px system-ui, -apple-system, sans-serif`
+      const textWidth = ctx.measureText(whatsappBadge.text).width
+      
+      // Draw background
+      ctx.fillStyle = whatsappBadge.bgColor
+      ctx.fillRect(badgeX, badgeY - fontSize/2 - padding, textWidth + padding*2, fontSize + padding*2)
+      
+      // Draw text
+      ctx.fillStyle = whatsappBadge.textColor
+      ctx.textBaseline = "middle"
+      ctx.fillText(whatsappBadge.text, badgeX + padding, badgeY)
+    }
+    
+    // Convert to blob
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob)
+        else reject(new Error("Failed to create blob"))
+      }, "image/jpeg", 0.92)
+    })
+  }, [selectedImage, showStripe, stripeColor, titleConfig, subtitleConfig, taglineConfig, phoneBadge, whatsappBadge])
+
+  // Export as image
+  const exportImage = async () => {
+    try {
+      const blob = await generateCanvasImage()
+      const url = URL.createObjectURL(blob)
       const link = document.createElement("a")
-      link.download = `hero-${Date.now()}.png`
-      link.href = dataUrl
+      link.download = `hero-${Date.now()}.jpg`
+      link.href = url
       link.click()
+      URL.revokeObjectURL(url)
     } catch (error) {
       console.error("Error exporting image:", error)
       alert("Error al exportar la imagen. Inténtalo de nuevo.")
     }
   }
 
-  // Quick update title with city/service
-  const quickUpdateTitle = (city: string, service: string) => {
-    setTitleConfig(prev => ({
-      ...prev,
-      text: `${service} en ${city}`
-    }))
-  }
-
   // Use this image - generate and upload directly
   const useThisImage = async () => {
-    if (!canvasRef.current) return
-    
     setUploading(true)
     try {
-      const domtoimage = await import("dom-to-image-more")
-      
-      // Use dom-to-image-more which handles modern CSS better
-      const blob = await domtoimage.toBlob(canvasRef.current, {
-        quality: 0.95,
-        bgcolor: "#ffffff",
-        width: canvasRef.current.offsetWidth * 2,
-        height: canvasRef.current.offsetHeight * 2,
-        style: {
-          transform: "scale(2)",
-          transformOrigin: "top left"
-        }
-      })
+      const blob = await generateCanvasImage()
       
       // Convert blob to File
       const safeCityName = cityName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
@@ -315,7 +398,6 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
       const data = await response.json()
       
       if (!response.ok) {
-        console.error("[v0] Upload error response:", data)
         throw new Error(data.error || "Upload failed")
       }
       
@@ -325,7 +407,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
       // Collapse the editor
       setExpanded(false)
     } catch (error) {
-      console.error("[v0] Error uploading image:", error)
+      console.error("Error uploading image:", error)
       alert(`Error al subir la imagen: ${error instanceof Error ? error.message : "Error desconocido"}`)
     } finally {
       setUploading(false)
