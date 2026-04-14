@@ -96,10 +96,10 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
   // Selected base image
   const [selectedImage, setSelectedImage] = useState(BASE_IMAGES[0].src)
   
-  // Text configurations
+  // Text configurations - X is now "margin from left" (not center)
   const [titleConfig, setTitleConfig] = useState<TextConfig>({
     text: `${serviceName} en ${cityName}`,
-    x: 50,
+    x: 5,
     y: 30,
     size: 48,
     color: "#1e293b",
@@ -109,7 +109,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
   
   const [subtitleConfig, setSubtitleConfig] = useState<TextConfig>({
     text: "Servicio profesional 24 horas",
-    x: 50,
+    x: 5,
     y: 45,
     size: 24,
     color: "#475569",
@@ -119,7 +119,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
   
   const [taglineConfig, setTaglineConfig] = useState<TextConfig>({
     text: "Llegamos en 15-30 minutos",
-    x: 50,
+    x: 5,
     y: 55,
     size: 18,
     color: "#f59e0b",
@@ -130,7 +130,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
   // Badges
   const [phoneBadge, setPhoneBadge] = useState<BadgeConfig>({
     text: "900 433 189",
-    x: 50,
+    x: 5,
     y: 70,
     bgColor: "#f59e0b",
     textColor: "#1e293b",
@@ -139,7 +139,7 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
   
   const [whatsappBadge, setWhatsappBadge] = useState<BadgeConfig>({
     text: "WhatsApp",
-    x: 75,
+    x: 25,
     y: 70,
     bgColor: "#22c55e",
     textColor: "#ffffff",
@@ -161,8 +161,8 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     // USE PAGE CONTEXT - serviceName and cityName from props
     const randomTagline = TAGLINES[Math.floor(Math.random() * TAGLINES.length)]
     
-    // Random positions (within safe areas)
-    const baseX = 25 + Math.random() * 15  // Keep text on left side
+    // Random positions (margin from left edge - small values to avoid cutting)
+    const baseX = 3 + Math.random() * 5  // 3-8% margin from left
     
     // Random colors
     const colors = ["#1e293b", "#0f172a", "#334155", "#1e40af", "#7c2d12"]
@@ -199,14 +199,14 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     setPhoneBadge(prev => ({
       ...prev,
       x: baseX,
-      y: 68 + Math.random() * 10,
+      y: 68 + Math.random() * 8,
       bgColor: randomAccent
     }))
     
     setWhatsappBadge(prev => ({
       ...prev,
-      x: baseX + 20,
-      y: 68 + Math.random() * 10
+      x: baseX + 18,
+      y: 68 + Math.random() * 8
     }))
     
     setStripeColor(randomAccent)
@@ -266,11 +266,14 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
         }, "image/png", 0.95)
       })
       
-      // Create FormData and upload
+      // Convert blob to File (same as manual upload)
+      const filename = `hero-${serviceName.toLowerCase().replace(/\s+/g, '-')}-${cityName.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.png`
+      const file = new File([blob], filename, { type: "image/png" })
+      
+      // Create FormData and upload (same pattern as ImageUploader)
       const formData = new FormData()
-      formData.append("file", blob, `hero-${Date.now()}.png`)
+      formData.append("file", file)
       formData.append("folder", "pages")
-      formData.append("optimize", "true")
       
       const response = await fetch("/api/admin/upload", {
         method: "POST",
@@ -361,38 +364,64 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
               <Label className="text-sm font-medium">Vista previa</Label>
               <div 
                 ref={canvasRef}
-                className="relative w-full aspect-[1200/630] bg-white rounded-lg overflow-hidden border shadow-lg"
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  aspectRatio: "1200/630",
+                  backgroundColor: "#ffffff",
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  border: "1px solid #e5e7eb"
+                }}
               >
                 {/* Background Image */}
                 <img
                   src={selectedImage}
                   alt="Base"
-                  className="absolute inset-0 w-full h-full object-cover object-top"
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    objectPosition: "top"
+                  }}
                   crossOrigin="anonymous"
                 />
                 
-                {/* Overlay gradient */}
-                <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/70 to-transparent" />
+                {/* Overlay gradient - using inline style with rgba */}
+                <div style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "linear-gradient(to right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.75) 40%, rgba(255,255,255,0) 70%)"
+                }} />
                 
                 {/* Stripe */}
                 {showStripe && (
                   <div 
-                    className="absolute left-0 top-0 bottom-0 w-2"
-                    style={{ backgroundColor: stripeColor }}
+                    style={{ 
+                      position: "absolute",
+                      left: 0,
+                      top: 0,
+                      bottom: 0,
+                      width: "8px",
+                      backgroundColor: stripeColor 
+                    }}
                   />
                 )}
                 
                 {/* Title */}
                 {titleConfig.visible && (
                   <div
-                    className="absolute whitespace-nowrap"
                     style={{
+                      position: "absolute",
+                      whiteSpace: "nowrap",
                       left: `${titleConfig.x}%`,
                       top: `${titleConfig.y}%`,
-                      transform: "translate(-50%, -50%)",
+                      transform: "translateY(-50%)",
                       fontSize: `${titleConfig.size}px`,
                       color: titleConfig.color,
-                      fontWeight: titleConfig.fontWeight
+                      fontWeight: titleConfig.fontWeight === "bold" ? 700 : 400
                     }}
                   >
                     {titleConfig.text}
@@ -402,14 +431,15 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                 {/* Subtitle */}
                 {subtitleConfig.visible && (
                   <div
-                    className="absolute whitespace-nowrap"
                     style={{
+                      position: "absolute",
+                      whiteSpace: "nowrap",
                       left: `${subtitleConfig.x}%`,
                       top: `${subtitleConfig.y}%`,
-                      transform: "translate(-50%, -50%)",
+                      transform: "translateY(-50%)",
                       fontSize: `${subtitleConfig.size}px`,
                       color: subtitleConfig.color,
-                      fontWeight: subtitleConfig.fontWeight
+                      fontWeight: subtitleConfig.fontWeight === "bold" ? 700 : 400
                     }}
                   >
                     {subtitleConfig.text}
@@ -419,14 +449,15 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                 {/* Tagline */}
                 {taglineConfig.visible && (
                   <div
-                    className="absolute whitespace-nowrap"
                     style={{
+                      position: "absolute",
+                      whiteSpace: "nowrap",
                       left: `${taglineConfig.x}%`,
                       top: `${taglineConfig.y}%`,
-                      transform: "translate(-50%, -50%)",
+                      transform: "translateY(-50%)",
                       fontSize: `${taglineConfig.size}px`,
                       color: taglineConfig.color,
-                      fontWeight: taglineConfig.fontWeight
+                      fontWeight: taglineConfig.fontWeight === "semibold" ? 600 : 400
                     }}
                   >
                     {taglineConfig.text}
@@ -436,16 +467,24 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                 {/* Phone Badge */}
                 {phoneBadge.visible && (
                   <div
-                    className="absolute px-4 py-2 rounded-lg font-bold flex items-center gap-2"
                     style={{
+                      position: "absolute",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      padding: "8px 16px",
+                      borderRadius: "8px",
+                      fontWeight: 700,
                       left: `${phoneBadge.x}%`,
                       top: `${phoneBadge.y}%`,
-                      transform: "translate(-50%, -50%)",
+                      transform: "translateY(-50%)",
                       backgroundColor: phoneBadge.bgColor,
                       color: phoneBadge.textColor
                     }}
                   >
-                    <Phone className="h-5 w-5" />
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
                     {phoneBadge.text}
                   </div>
                 )}
@@ -453,16 +492,24 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
                 {/* WhatsApp Badge */}
                 {whatsappBadge.visible && (
                   <div
-                    className="absolute px-4 py-2 rounded-lg font-medium flex items-center gap-2"
                     style={{
+                      position: "absolute",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      padding: "8px 16px",
+                      borderRadius: "8px",
+                      fontWeight: 500,
                       left: `${whatsappBadge.x}%`,
                       top: `${whatsappBadge.y}%`,
-                      transform: "translate(-50%, -50%)",
+                      transform: "translateY(-50%)",
                       backgroundColor: whatsappBadge.bgColor,
                       color: whatsappBadge.textColor
                     }}
                   >
-                    <MessageCircle className="h-5 w-5" />
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
                     {whatsappBadge.text}
                   </div>
                 )}
