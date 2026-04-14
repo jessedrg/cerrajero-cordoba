@@ -181,7 +181,7 @@ export default async function CerrajeroMainPage() {
       <section className="py-16 border-b">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl lg:text-3xl font-bold text-center mb-12">
-            Nuestros servicios
+            Cerrajeros
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
             {content.services.map((serviceItem, index) => (

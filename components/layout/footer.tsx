@@ -1,112 +1,98 @@
 import Link from "next/link"
 import Image from "next/image"
-import { Phone, Mail, MapPin } from "lucide-react"
-import { createClient } from "@/lib/supabase/server"
+import { Phone, Mail, MapPin, Clock } from "lucide-react"
 
 const PHONE_NUMBER = "900433189"
 const PHONE_DISPLAY = "900 433 189"
 
-async function getFooterData() {
-  const supabase = await createClient()
-  
-  const [servicesResult, citiesResult] = await Promise.all([
-    supabase
-      .from("services")
-      .select("name, slug")
-      .order("name")
-      .limit(6),
-    supabase
-      .from("cities")
-      .select("name, slug")
-      .order("population", { ascending: false, nullsFirst: false })
-      .limit(6)
-  ])
-  
-  return {
-    services: servicesResult.data || [],
-    cities: citiesResult.data || []
-  }
-}
-
-export async function Footer() {
-  const { services, cities } = await getFooterData()
+export function Footer() {
   return (
-    <footer className="border-t bg-muted/30">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+    <footer className="bg-slate-900 text-slate-100">
+      <div className="container mx-auto px-4 py-14">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-3 mb-4">
+          <div>
+            <Link href="/" className="flex items-center gap-3 mb-5">
               <Image
                 src="/logo.jpg"
                 alt="Cerrajero Córdoba 24H"
-                width={40}
-                height={40}
-                className="rounded-lg"
+                width={48}
+                height={48}
+                className="rounded-xl"
               />
-              <span className="font-bold text-lg text-primary">Cerrajero Córdoba</span>
+              <span className="font-bold text-xl text-amber-400">Cerrajero Córdoba</span>
             </Link>
-            <p className="text-sm text-muted-foreground mb-4">
-              Cerrajeros profesionales en Córdoba y provincia. Servicio urgente 24 horas, 365 días.
+            <p className="text-slate-400 mb-6 leading-relaxed">
+              Cerrajeros profesionales en Córdoba y provincia. Servicio urgente 24 horas, 365 días del año.
             </p>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <a href={`tel:+34${PHONE_NUMBER}`} className="flex items-center gap-2 hover:text-blue-600 transition-colors font-semibold">
-                <Phone className="h-4 w-4 text-blue-600" />
+            <div className="space-y-4">
+              <a href={`tel:+34${PHONE_NUMBER}`} className="flex items-center gap-3 text-amber-400 hover:text-amber-300 transition-colors font-semibold text-lg">
+                <div className="bg-amber-500/20 p-2.5 rounded-xl">
+                  <Phone className="h-5 w-5 text-amber-400" />
+                </div>
                 {PHONE_DISPLAY}
               </a>
-              <a href="mailto:info@cerrajerocordoba.es" className="flex items-center gap-2 hover:text-foreground transition-colors">
-                <Mail className="h-4 w-4" />
+              <a href="mailto:info@cerrajerocordoba.es" className="flex items-center gap-3 text-slate-400 hover:text-white transition-colors">
+                <div className="bg-slate-800 p-2.5 rounded-xl">
+                  <Mail className="h-5 w-5" />
+                </div>
                 info@cerrajerocordoba.es
               </a>
-              <span className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
+              <div className="flex items-center gap-3 text-slate-400">
+                <div className="bg-slate-800 p-2.5 rounded-xl">
+                  <MapPin className="h-5 w-5" />
+                </div>
                 Córdoba y provincia
-              </span>
+              </div>
+              <div className="flex items-center gap-3 text-slate-400">
+                <div className="bg-slate-800 p-2.5 rounded-xl">
+                  <Clock className="h-5 w-5" />
+                </div>
+                24 horas / 365 días
+              </div>
             </div>
           </div>
 
-          {/* Services */}
+          {/* Servicios de Cerrajería */}
           <div>
-            <h3 className="font-semibold mb-4">Servicios</h3>
-            <ul className="space-y-2">
-              {services.map((service) => (
-                <li key={service.slug}>
-                  <Link 
-                    href={`/${service.slug}`}
-                    className="text-sm text-muted-foreground hover:text-blue-600 transition-colors"
-                  >
-                    {service.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Cities */}
-          <div>
-            <h3 className="font-semibold mb-4">Ciudades</h3>
-            <ul className="space-y-2">
-              {cities.map((city) => (
-                <li key={city.slug}>
-                  <Link 
-                    href={`/fontanero-${city.slug}`}
-                    className="text-sm text-muted-foreground hover:text-blue-600 transition-colors"
-                  >
-                    {city.name}
-                  </Link>
-                </li>
-              ))}
+            <h3 className="font-semibold text-white text-lg mb-6">Cerrajeros</h3>
+            <ul className="space-y-3">
+              <li>
+                <Link href="/cerrajero" className="text-slate-400 hover:text-amber-400 transition-colors">
+                  Cerrajero 24 horas
+                </Link>
+              </li>
+              <li>
+                <Link href="/cerrajero" className="text-slate-400 hover:text-amber-400 transition-colors">
+                  Apertura de puertas
+                </Link>
+              </li>
+              <li>
+                <Link href="/cerrajero" className="text-slate-400 hover:text-amber-400 transition-colors">
+                  Cambio de cerraduras
+                </Link>
+              </li>
+              <li>
+                <Link href="/cerrajero" className="text-slate-400 hover:text-amber-400 transition-colors">
+                  Cerraduras de seguridad
+                </Link>
+              </li>
+              <li>
+                <Link href="/cerrajero" className="text-slate-400 hover:text-amber-400 transition-colors">
+                  Cerrajería urgente
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Legal */}
           <div>
-            <h3 className="font-semibold mb-4">Legal</h3>
-            <ul className="space-y-2">
+            <h3 className="font-semibold text-white text-lg mb-6">Legal</h3>
+            <ul className="space-y-3">
               <li>
                 <Link 
                   href="/politica-privacidad"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-slate-400 hover:text-amber-400 transition-colors"
                 >
                   Política de Privacidad
                 </Link>
@@ -114,7 +100,7 @@ export async function Footer() {
               <li>
                 <Link 
                   href="/aviso-legal"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-slate-400 hover:text-amber-400 transition-colors"
                 >
                   Aviso Legal
                 </Link>
@@ -122,7 +108,7 @@ export async function Footer() {
               <li>
                 <Link 
                   href="/politica-cookies"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-slate-400 hover:text-amber-400 transition-colors"
                 >
                   Política de Cookies
                 </Link>
@@ -130,7 +116,7 @@ export async function Footer() {
               <li>
                 <Link 
                   href="/blog"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-slate-400 hover:text-amber-400 transition-colors"
                 >
                   Blog
                 </Link>
@@ -139,17 +125,18 @@ export async function Footer() {
           </div>
         </div>
 
-        <div className="border-t mt-12 pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Cerrajero Córdoba 24H. Todos los derechos reservados.</p>
-          <p className="mt-2">
-            <a href={`tel:+34${PHONE_NUMBER}`} className="hover:text-blue-600 transition-colors">
-              Teléfono: {PHONE_DISPLAY}
+        <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-slate-500 text-sm">
+            &copy; {new Date().getFullYear()} Cerrajero Córdoba 24H. Todos los derechos reservados.
+          </p>
+          <div className="flex items-center gap-6 text-sm">
+            <a href={`tel:+34${PHONE_NUMBER}`} className="text-slate-400 hover:text-amber-400 transition-colors">
+              {PHONE_DISPLAY}
             </a>
-            {" | "}
-            <a href="https://www.cerrajerocordoba.es" className="hover:text-primary transition-colors">
+            <a href="https://www.cerrajerocordoba.es" className="text-slate-400 hover:text-amber-400 transition-colors">
               www.cerrajerocordoba.es
             </a>
-          </p>
+          </div>
         </div>
       </div>
     </footer>
