@@ -20,15 +20,15 @@ interface TestimonialsProps {
   maxDisplay?: number
 }
 
-const colorVariants: Record<string, { bg: string; avatar: string; quote: string }> = {
-  blue: { bg: "bg-blue-50", avatar: "bg-blue-100 text-blue-600", quote: "text-blue-200" },
-  green: { bg: "bg-green-50", avatar: "bg-green-100 text-green-600", quote: "text-green-200" },
-  orange: { bg: "bg-orange-50", avatar: "bg-orange-100 text-orange-600", quote: "text-orange-200" },
-  teal: { bg: "bg-teal-50", avatar: "bg-teal-100 text-teal-600", quote: "text-teal-200" },
-  indigo: { bg: "bg-indigo-50", avatar: "bg-indigo-100 text-indigo-600", quote: "text-indigo-200" },
-  emerald: { bg: "bg-emerald-50", avatar: "bg-emerald-100 text-emerald-600", quote: "text-emerald-200" },
-  amber: { bg: "bg-amber-50", avatar: "bg-amber-100 text-amber-600", quote: "text-amber-200" },
-  cyan: { bg: "bg-cyan-50", avatar: "bg-cyan-100 text-cyan-600", quote: "text-cyan-200" },
+const colorVariants: Record<string, { bg: string; avatar: string; quote: string; wrapper: string }> = {
+  blue: { bg: "bg-blue-50", avatar: "bg-blue-100 text-blue-600", quote: "text-blue-200", wrapper: "bg-blue-100 border-blue-200" },
+  green: { bg: "bg-green-50", avatar: "bg-green-100 text-green-600", quote: "text-green-200", wrapper: "bg-green-100 border-green-200" },
+  orange: { bg: "bg-orange-50", avatar: "bg-orange-100 text-orange-600", quote: "text-orange-200", wrapper: "bg-orange-100 border-orange-200" },
+  teal: { bg: "bg-teal-50", avatar: "bg-teal-100 text-teal-600", quote: "text-teal-200", wrapper: "bg-teal-100 border-teal-200" },
+  indigo: { bg: "bg-indigo-50", avatar: "bg-indigo-100 text-indigo-600", quote: "text-indigo-200", wrapper: "bg-indigo-100 border-indigo-200" },
+  emerald: { bg: "bg-emerald-50", avatar: "bg-emerald-100 text-emerald-600", quote: "text-emerald-200", wrapper: "bg-emerald-100 border-emerald-200" },
+  amber: { bg: "bg-slate-100", avatar: "bg-slate-900 text-amber-400", quote: "text-amber-300", wrapper: "bg-slate-100 border-slate-200" },
+  cyan: { bg: "bg-cyan-50", avatar: "bg-cyan-100 text-cyan-600", quote: "text-cyan-200", wrapper: "bg-cyan-100 border-cyan-200" },
 }
 
 export function Testimonials({ 
@@ -107,7 +107,7 @@ export function Testimonials({
   // Style: Grid (default "cards") - Masonry layout for variable content
   return (
     <div className={cn("container mx-auto px-4", className)}>
-      <div className="bg-orange-100 border border-orange-200 rounded-3xl p-6 sm:p-8 lg:p-10">
+      <div className={cn("border rounded-3xl p-6 sm:p-8 lg:p-10", colors.wrapper)}>
         <h2 className="text-2xl font-bold mb-8 text-balance">{title}</h2>
         {/* CSS Columns masonry for natural content flow */}
         <div className={cn(

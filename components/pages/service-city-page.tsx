@@ -260,72 +260,90 @@ interface ServiceCityPageProps {
 const colorSchemes: Record<string, { 
   bg: string
   bgAlt: string
+  bgDark: string
   border: string
   text: string
+  textLight: string
   accent: string
   button: string
 }> = {
   blue: { 
     bg: "bg-blue-50", 
     bgAlt: "bg-blue-100/50",
+    bgDark: "bg-blue-900",
     border: "border-blue-200", 
     text: "text-blue-700",
+    textLight: "text-blue-300",
     accent: "text-blue-500",
     button: "bg-blue-600 hover:bg-blue-700"
   },
   green: { 
     bg: "bg-green-50", 
     bgAlt: "bg-green-100/50",
+    bgDark: "bg-green-900",
     border: "border-green-200", 
     text: "text-green-700",
+    textLight: "text-green-300",
     accent: "text-green-500",
     button: "bg-green-600 hover:bg-green-700"
   },
   orange: { 
     bg: "bg-orange-50", 
     bgAlt: "bg-orange-100/50",
+    bgDark: "bg-orange-900",
     border: "border-orange-200", 
     text: "text-orange-700",
+    textLight: "text-orange-300",
     accent: "text-orange-500",
     button: "bg-orange-500 hover:bg-orange-600"
   },
   teal: { 
     bg: "bg-teal-50", 
     bgAlt: "bg-teal-100/50",
+    bgDark: "bg-teal-900",
     border: "border-teal-200", 
     text: "text-teal-700",
+    textLight: "text-teal-300",
     accent: "text-teal-500",
     button: "bg-teal-600 hover:bg-teal-700"
   },
   indigo: { 
     bg: "bg-indigo-50", 
     bgAlt: "bg-indigo-100/50",
+    bgDark: "bg-indigo-900",
     border: "border-indigo-200", 
     text: "text-indigo-700",
+    textLight: "text-indigo-300",
     accent: "text-indigo-500",
     button: "bg-indigo-600 hover:bg-indigo-700"
   },
   emerald: { 
     bg: "bg-emerald-50", 
     bgAlt: "bg-emerald-100/50",
+    bgDark: "bg-emerald-900",
     border: "border-emerald-200", 
     text: "text-emerald-700",
+    textLight: "text-emerald-300",
     accent: "text-emerald-500",
     button: "bg-emerald-600 hover:bg-emerald-700"
   },
   amber: { 
-    bg: "bg-amber-50", 
-    bgAlt: "bg-amber-100/50",
-    border: "border-amber-200", 
-    text: "text-amber-700",
+    bg: "bg-slate-50", 
+    bgAlt: "bg-slate-100",
+    bgDark: "bg-slate-900",
+    border: "border-slate-200", 
+    text: "text-slate-900",
+    textLight: "text-slate-300",
     accent: "text-amber-500",
-    button: "bg-amber-600 hover:bg-amber-700"
+    button: "bg-amber-500 hover:bg-amber-400 text-slate-900"
   },
   cyan: { 
     bg: "bg-cyan-50", 
     bgAlt: "bg-cyan-100/50",
+    bgDark: "bg-cyan-900",
     border: "border-cyan-200", 
     text: "text-cyan-700",
+    textLight: "text-cyan-300",
     accent: "text-cyan-500",
     button: "bg-cyan-600 hover:bg-cyan-700"
   },
@@ -388,11 +406,11 @@ export function ServiceCityPage({
   const styleOverrides = page.style_overrides || {}
   const designVariation = page.design_variation || {}
   
-  // Color scheme
+  // Color scheme - default to amber for slate/amber theme matching static pages
   const colorScheme = styleOverrides.primary_color 
-    ? "orange" // fallback si hay override
-    : (designVariation.color_scheme || "orange")
-  const colors = colorSchemes[colorScheme] || colorSchemes.orange
+    ? "amber" // fallback si hay override
+    : (designVariation.color_scheme || "amber")
+  const colors = colorSchemes[colorScheme] || colorSchemes.amber
   
   // Layout settings
   const heroHeight = heroHeights[layoutConfig.hero_height || "medium"]
@@ -587,7 +605,7 @@ ctaConfig={{
 
           {/* Services con precios */}
           {servicesEnabled && page.services_offered && page.services_offered.length > 0 && (
-            <section className={cn(sectionSpacing, "border-t")}>
+            <section className={cn(sectionSpacing, "border-t bg-slate-50")}>
               <ServicesList 
                 services={page.services_offered}
                 title={`Servicios de ${service.name} en ${cityData.name}`}
@@ -601,7 +619,7 @@ ctaConfig={{
 
           {/* Por qué elegirnos */}
           {page.why_choose_us && page.why_choose_us.length > 0 && (
-            <section className={cn(sectionSpacing, "border-t", colors.bg)}>
+            <section className={cn(sectionSpacing, "border-t bg-white")}>
               <WhyChooseUs 
                 reasons={page.why_choose_us}
                 serviceName={service.name}
@@ -624,7 +642,7 @@ ctaConfig={{
 
           {/* Coverage Zones */}
           {page.coverage_zones && page.coverage_zones.length > 0 && (
-            <section className={cn(sectionSpacing, "border-t")}>
+            <section className={cn(sectionSpacing, "border-t bg-slate-100")}>
               <CoverageZones 
                 zones={page.coverage_zones}
                 cityName={cityData.name}
