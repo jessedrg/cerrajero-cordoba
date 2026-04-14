@@ -7,45 +7,45 @@ const PHONE_DISPLAY = "900 433 189"
 
 export function Footer() {
   return (
-    <footer className="bg-zinc-900 text-zinc-100">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+    <footer className="bg-slate-900 text-slate-100">
+      <div className="container mx-auto px-4 py-14">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Brand */}
           <div>
-            <Link href="/" className="flex items-center gap-3 mb-4">
+            <Link href="/" className="flex items-center gap-3 mb-5">
               <Image
                 src="/logo.jpg"
                 alt="Cerrajero Córdoba 24H"
                 width={48}
                 height={48}
-                className="rounded-lg"
+                className="rounded-xl"
               />
-              <span className="font-bold text-xl text-white">Cerrajero Córdoba</span>
+              <span className="font-bold text-xl text-amber-400">Cerrajero Córdoba</span>
             </Link>
-            <p className="text-zinc-400 mb-6 leading-relaxed">
+            <p className="text-slate-400 mb-6 leading-relaxed">
               Cerrajeros profesionales en Córdoba y provincia. Servicio urgente 24 horas, 365 días del año.
             </p>
-            <div className="space-y-3">
-              <a href={`tel:+34${PHONE_NUMBER}`} className="flex items-center gap-3 text-orange-400 hover:text-orange-300 transition-colors font-semibold text-lg">
-                <div className="bg-orange-500/20 p-2 rounded-lg">
-                  <Phone className="h-5 w-5 text-orange-400" />
+            <div className="space-y-4">
+              <a href={`tel:+34${PHONE_NUMBER}`} className="flex items-center gap-3 text-amber-400 hover:text-amber-300 transition-colors font-semibold text-lg">
+                <div className="bg-amber-500/20 p-2.5 rounded-xl">
+                  <Phone className="h-5 w-5 text-amber-400" />
                 </div>
                 {PHONE_DISPLAY}
               </a>
-              <a href="mailto:info@cerrajerocordoba.es" className="flex items-center gap-3 text-zinc-400 hover:text-white transition-colors">
-                <div className="bg-zinc-800 p-2 rounded-lg">
+              <a href="mailto:info@cerrajerocordoba.es" className="flex items-center gap-3 text-slate-400 hover:text-white transition-colors">
+                <div className="bg-slate-800 p-2.5 rounded-xl">
                   <Mail className="h-5 w-5" />
                 </div>
                 info@cerrajerocordoba.es
               </a>
-              <div className="flex items-center gap-3 text-zinc-400">
-                <div className="bg-zinc-800 p-2 rounded-lg">
+              <div className="flex items-center gap-3 text-slate-400">
+                <div className="bg-slate-800 p-2.5 rounded-xl">
                   <MapPin className="h-5 w-5" />
                 </div>
                 Córdoba y provincia
               </div>
-              <div className="flex items-center gap-3 text-zinc-400">
-                <div className="bg-zinc-800 p-2 rounded-lg">
+              <div className="flex items-center gap-3 text-slate-400">
+                <div className="bg-slate-800 p-2.5 rounded-xl">
                   <Clock className="h-5 w-5" />
                 </div>
                 24 horas / 365 días
@@ -55,30 +55,30 @@ export function Footer() {
 
           {/* Servicios de Cerrajería */}
           <div>
-            <h3 className="font-semibold text-white text-lg mb-5">Cerrajeros</h3>
+            <h3 className="font-semibold text-white text-lg mb-6">Cerrajeros</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/cerrajero" className="text-zinc-400 hover:text-orange-400 transition-colors">
+                <Link href="/cerrajero" className="text-slate-400 hover:text-amber-400 transition-colors">
                   Cerrajero 24 horas
                 </Link>
               </li>
               <li>
-                <Link href="/cerrajero" className="text-zinc-400 hover:text-orange-400 transition-colors">
+                <Link href="/cerrajero" className="text-slate-400 hover:text-amber-400 transition-colors">
                   Apertura de puertas
                 </Link>
               </li>
               <li>
-                <Link href="/cerrajero" className="text-zinc-400 hover:text-orange-400 transition-colors">
+                <Link href="/cerrajero" className="text-slate-400 hover:text-amber-400 transition-colors">
                   Cambio de cerraduras
                 </Link>
               </li>
               <li>
-                <Link href="/cerrajero" className="text-zinc-400 hover:text-orange-400 transition-colors">
+                <Link href="/cerrajero" className="text-slate-400 hover:text-amber-400 transition-colors">
                   Cerraduras de seguridad
                 </Link>
               </li>
               <li>
-                <Link href="/cerrajero" className="text-zinc-400 hover:text-orange-400 transition-colors">
+                <Link href="/cerrajero" className="text-slate-400 hover:text-amber-400 transition-colors">
                   Cerrajería urgente
                 </Link>
               </li>
@@ -87,12 +87,12 @@ export function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="font-semibold text-white text-lg mb-5">Legal</h3>
+            <h3 className="font-semibold text-white text-lg mb-6">Legal</h3>
             <ul className="space-y-3">
               <li>
                 <Link 
                   href="/politica-privacidad"
-                  className="text-zinc-400 hover:text-orange-400 transition-colors"
+                  className="text-slate-400 hover:text-amber-400 transition-colors"
                 >
                   Política de Privacidad
                 </Link>
@@ -100,7 +100,7 @@ export function Footer() {
               <li>
                 <Link 
                   href="/aviso-legal"
-                  className="text-zinc-400 hover:text-orange-400 transition-colors"
+                  className="text-slate-400 hover:text-amber-400 transition-colors"
                 >
                   Aviso Legal
                 </Link>
@@ -108,7 +108,7 @@ export function Footer() {
               <li>
                 <Link 
                   href="/politica-cookies"
-                  className="text-zinc-400 hover:text-orange-400 transition-colors"
+                  className="text-slate-400 hover:text-amber-400 transition-colors"
                 >
                   Política de Cookies
                 </Link>
@@ -116,7 +116,7 @@ export function Footer() {
               <li>
                 <Link 
                   href="/blog"
-                  className="text-zinc-400 hover:text-orange-400 transition-colors"
+                  className="text-slate-400 hover:text-amber-400 transition-colors"
                 >
                   Blog
                 </Link>
@@ -125,15 +125,15 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-zinc-800 mt-10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-zinc-500 text-sm">
+        <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-slate-500 text-sm">
             &copy; {new Date().getFullYear()} Cerrajero Córdoba 24H. Todos los derechos reservados.
           </p>
           <div className="flex items-center gap-6 text-sm">
-            <a href={`tel:+34${PHONE_NUMBER}`} className="text-zinc-400 hover:text-orange-400 transition-colors">
+            <a href={`tel:+34${PHONE_NUMBER}`} className="text-slate-400 hover:text-amber-400 transition-colors">
               {PHONE_DISPLAY}
             </a>
-            <a href="https://www.cerrajerocordoba.es" className="text-zinc-400 hover:text-orange-400 transition-colors">
+            <a href="https://www.cerrajerocordoba.es" className="text-slate-400 hover:text-amber-400 transition-colors">
               www.cerrajerocordoba.es
             </a>
           </div>
