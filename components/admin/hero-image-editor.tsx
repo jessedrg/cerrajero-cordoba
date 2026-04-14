@@ -266,11 +266,14 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
         }, "image/png", 0.95)
       })
       
-      // Create FormData and upload
+      // Convert blob to File (same as manual upload)
+      const filename = `hero-${serviceName.toLowerCase().replace(/\s+/g, '-')}-${cityName.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.png`
+      const file = new File([blob], filename, { type: "image/png" })
+      
+      // Create FormData and upload (same pattern as ImageUploader)
       const formData = new FormData()
-      formData.append("file", blob, `hero-${Date.now()}.png`)
+      formData.append("file", file)
       formData.append("folder", "pages")
-      formData.append("optimize", "true")
       
       const response = await fetch("/api/admin/upload", {
         method: "POST",
