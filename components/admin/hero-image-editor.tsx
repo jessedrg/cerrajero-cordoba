@@ -240,25 +240,30 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     setTimeout(() => setGenerating(false), 300)
   }, [serviceName, cityName])
 
-  // Export as image using html2canvas
+  // Export as image using dom-to-image-more
   const exportImage = async () => {
     if (!canvasRef.current) return
     
     try {
-      const html2canvas = (await import("html2canvas")).default
-      const canvas = await html2canvas(canvasRef.current, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#ffffff"
+      const domtoimage = await import("dom-to-image-more")
+      const dataUrl = await domtoimage.toPng(canvasRef.current, {
+        quality: 1,
+        bgcolor: "#ffffff",
+        width: canvasRef.current.offsetWidth * 2,
+        height: canvasRef.current.offsetHeight * 2,
+        style: {
+          transform: "scale(2)",
+          transformOrigin: "top left"
+        }
       })
       
       const link = document.createElement("a")
       link.download = `hero-${Date.now()}.png`
-      link.href = canvas.toDataURL("image/png")
+      link.href = dataUrl
       link.click()
     } catch (error) {
       console.error("Error exporting image:", error)
+      alert("Error al exportar la imagen. Inténtalo de nuevo.")
     }
   }
 
@@ -276,23 +281,18 @@ export function HeroImageEditor({ value, onChange, serviceName = "Cerrajero", ci
     
     setUploading(true)
     try {
-      const html2canvas = (await import("html2canvas")).default
-      const canvas = await html2canvas(canvasRef.current, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#ffffff",
-        logging: false,
-        imageTimeout: 15000,
-        removeContainer: true
-      })
+      const domtoimage = await import("dom-to-image-more")
       
-      // Convert canvas to blob - use JPEG for better compatibility with sharp
-      const blob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob((blob) => {
-          if (blob) resolve(blob)
-          else reject(new Error("Failed to create blob"))
-        }, "image/jpeg", 0.92)
+      // Use dom-to-image-more which handles modern CSS better
+      const blob = await domtoimage.toBlob(canvasRef.current, {
+        quality: 0.95,
+        bgcolor: "#ffffff",
+        width: canvasRef.current.offsetWidth * 2,
+        height: canvasRef.current.offsetHeight * 2,
+        style: {
+          transform: "scale(2)",
+          transformOrigin: "top left"
+        }
       })
       
       // Convert blob to File
