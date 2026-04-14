@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
 import { ImageUploader } from "@/components/admin/image-uploader"
+import { HeroImageEditor } from "@/components/admin/hero-image-editor"
 import { RichTextEditor } from "@/components/admin/rich-text-editor"
 import { 
   Save, 
@@ -1005,14 +1006,16 @@ export function SimplePageEditor({ page }: SimplePageEditorProps) {
             <CardHeader>
               <CardTitle>Imagen principal (Hero)</CardTitle>
               <CardDescription>
-                Esta imagen aparece en la cabecera de la página. Tamaño recomendado: 1200x630px
+                Esta imagen aparece en la cabecera de la página. Tamaño recomendado: 1200x630px. 
+                Puedes subir una imagen o usar el editor avanzado para crear una personalizada.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ImageUploader
+              <HeroImageEditor
                 value={formData.hero_image_url}
                 onChange={(url) => setFormData(prev => ({ ...prev, hero_image_url: url }))}
-                folder="pages"
+                serviceName={serviceName}
+                cityName={cityName}
               />
             </CardContent>
           </Card>
