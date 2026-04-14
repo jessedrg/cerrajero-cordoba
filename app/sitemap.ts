@@ -1,10 +1,6 @@
 import { MetadataRoute } from "next"
 import { createServiceClient } from "@/lib/supabase/server"
 
-// Force dynamic rendering - no caching
-export const dynamic = "force-dynamic"
-export const revalidate = 0
-
 type ChangeFrequency = "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never"
 
 /**
